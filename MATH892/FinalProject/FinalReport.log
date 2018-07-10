@@ -1,0 +1,602 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  24 APR 2018 16:27
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**FinalReport.tex
+(./FinalReport.tex
+LaTeX2e <2016/03/31>
+Babel <3.9r> and hyphenation patterns for 83 language(s) loaded.
+(/usr/local/texlive/2016/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
+(/usr/local/texlive/2016/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2016/03/10 v2.15b AMS math features
+\@mathmargin=\skip43
+
+For additional information on amsmath, use the `?' option.
+(/usr/local/texlive/2016/texmf-dist/tex/latex/amsmath/amstext.sty
+Package: amstext 2000/06/29 v2.01 AMS text
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks14
+\ex@=\dimen103
+))
+(/usr/local/texlive/2016/texmf-dist/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen104
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/amsmath/amsopn.sty
+Package: amsopn 2016/03/08 v2.02 operator names
+)
+\inf@bad=\count87
+LaTeX Info: Redefining \frac on input line 199.
+\uproot@=\count88
+\leftroot@=\count89
+LaTeX Info: Redefining \overline on input line 297.
+\classnum@=\count90
+\DOTSCASE@=\count91
+LaTeX Info: Redefining \ldots on input line 394.
+LaTeX Info: Redefining \dots on input line 397.
+LaTeX Info: Redefining \cdots on input line 518.
+\Mathstrutbox@=\box26
+\strutbox@=\box27
+\big@size=\dimen105
+LaTeX Font Info:    Redeclaring font encoding OML on input line 634.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 635.
+\macc@depth=\count92
+\c@MaxMatrixCols=\count93
+\dotsspace@=\muskip10
+\c@parentequation=\count94
+\dspbrk@lvl=\count95
+\tag@help=\toks15
+\row@=\count96
+\column@=\count97
+\maxfields@=\count98
+\andhelp@=\toks16
+\eqnshift@=\dimen106
+\alignsep@=\dimen107
+\tagshift@=\dimen108
+\tagwidth@=\dimen109
+\totwidth@=\dimen110
+\lineht@=\dimen111
+\@envbody=\toks17
+\multlinegap=\skip44
+\multlinetaggap=\skip45
+\mathdisplay@stack=\toks18
+LaTeX Info: Redefining \[ on input line 2739.
+LaTeX Info: Redefining \] on input line 2740.
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/amssymb.sty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2014/10/28 v1.0g Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks19
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2016/05/09 v1.0r Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/01/02 v1.10 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 96.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/pdftex-def/pdftex.def
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2016/05/16 v1.4 Providing info/warning/error messages (HO)
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
+)
+\Gread@gobject=\count99
+))
+\Gin@req@height=\dimen112
+\Gin@req@width=\dimen113
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2010/09/12 v5.6 Page Geometry
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2016/05/14 v3.1 Provides the ifpdf switch
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/ifvtex.sty
+Package: ifvtex 2016/05/16 v1.6 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/ifxetex/ifxetex.sty
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+\Gm@cnth=\count100
+\Gm@cntv=\count101
+\c@Gm@tempcnt=\count102
+\Gm@bindingoffset=\dimen114
+\Gm@wd@mp=\dimen115
+\Gm@odd@mp=\dimen116
+\Gm@even@mp=\dimen117
+\Gm@layoutwidth=\dimen118
+\Gm@layoutheight=\dimen119
+\Gm@layouthoffset=\dimen120
+\Gm@layoutvoffset=\dimen121
+\Gm@dimlist=\toks20
+)
+(./FinalReport.aux)
+\openout1 = `FinalReport.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+
+(/usr/local/texlive/2016/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count103
+\scratchdimen=\dimen122
+\scratchbox=\box28
+\nofMPsegments=\count104
+\nofMParguments=\count105
+\everyMPshowfont=\toks21
+\MPscratchCnt=\count106
+\MPscratchDim=\dimen123
+\MPnumerator=\count107
+\makeMPintoPDFobject=\count108
+\everyMPtoPDFconversion=\toks22
+) (/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
+Package: pdftexcmds 2016/05/10 v0.21 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/ifluatex.sty
+Package: ifluatex 2016/05/16 v1.4 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/oberdiek/grfext.sty
+Package: grfext 2016/05/16 v1.2 Manage graphics extensions (HO)
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/kvdefinekeys.sty
+Package: kvdefinekeys 2016/05/16 v1.4 Define keys (HO)
+))
+(/usr/local/texlive/2016/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+Package: kvoptions 2016/05/16 v3.12 Key value format for package options (HO)
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/kvsetkeys.sty
+Package: kvsetkeys 2016/05/16 v1.17 Key value parser (HO)
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/etexcmds.sty
+Package: etexcmds 2016/05/16 v1.6 Avoid name clashes with e-TeX commands (HO)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
+)))
+Package grfext Info: Graphics extension search list:
+(grfext)             [.png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 456.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(72.26999pt, 452.9679pt, 72.26999pt)
+* v-part:(T,H,B)=(72.26999pt, 700.50687pt, 72.26999pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=452.9679pt
+* \textheight=700.50687pt
+* \oddsidemargin=0.0pt
+* \evensidemargin=0.0pt
+* \topmargin=-37.0pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=10.0pt
+* \footskip=30.0pt
+* \marginparwidth=4.0pt
+* \marginparsep=10.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumntrue
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+LaTeX Font Info:    Try loading font information for U+msa on input line 13.
+(/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 13.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+Underfull \hbox (badness 10000) in paragraph at lines 43--45
+
+ []
+
+
+Underfull \hbox (badness 1122) in paragraph at lines 65--67
+\OT1/cmr/m/n/10 then, in-te-grat-ing eq.(12[]) for the time in-ter-val
+ []
+
+
+Overfull \hbox (10.10437pt too wide) detected at line 75
+[][] \OT1/cmr/m/n/10 = \OML/cmm/m/it/10 m\OT1/cmr/m/n/10 ([][]) \OMS/cmsy/m/n/1
+0 ^^@ []\OT1/cmr/m/n/10 ([][]) = \OML/cmm/m/it/10 m\OT1/cmr/m/n/10 ([][]) \OMS/
+cmsy/m/n/10 ^^@ []\OT1/cmr/m/n/10 ([][] \OMS/cmsy/m/n/10 ^^@ [][]\OT1/cmr/m/n/1
+0 )
+ []
+
+[1
+
+{/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+Package epstopdf Info: Source file: <Figures/AErrVsEns1.eps>
+(epstopdf)                    date: 2018-04-24 04:21:47
+(epstopdf)                    size: 55599 bytes
+(epstopdf)             Output file: <Figures/AErrVsEns1-eps-converted-to.pdf>
+(epstopdf)                    date: 2018-04-24 04:22:17
+(epstopdf)                    size: 20794 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/AErrVsEns1-eps-con
+verted-to.pdf Figures/AErrVsEns1.eps>
+(epstopdf)             \includegraphics on input line 149.
+Package epstopdf Info: Output file is already uptodate.
+
+<Figures/AErrVsEns1-eps-converted-to.pdf, id=18, 707.64375pt x 569.12625pt>
+File: Figures/AErrVsEns1-eps-converted-to.pdf Graphic file (type pdf)
+
+<use Figures/AErrVsEns1-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/AErrVsEns1-eps-converted-to.pdf used on input 
+line 149.
+(pdftex.def)             Requested size: 212.29475pt x 170.73918pt.
+ [2]
+Package epstopdf Info: Source file: <Figures/AErrVsDeltaT1.eps>
+(epstopdf)                    date: 2018-04-24 04:45:21
+(epstopdf)                    size: 64699 bytes
+(epstopdf)             Output file: <Figures/AErrVsDeltaT1-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2018-04-24 04:45:35
+(epstopdf)                    size: 23040 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/AErrVsDeltaT1-eps-
+converted-to.pdf Figures/AErrVsDeltaT1.eps>
+(epstopdf)             \includegraphics on input line 160.
+Package epstopdf Info: Output file is already uptodate.
+
+<Figures/AErrVsDeltaT1-eps-converted-to.pdf, id=22, 736.7525pt x 625.33624pt>
+File: Figures/AErrVsDeltaT1-eps-converted-to.pdf Graphic file (type pdf)
+
+<use Figures/AErrVsDeltaT1-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/AErrVsDeltaT1-eps-converted-to.pdf used on inp
+ut line 160.
+(pdftex.def)             Requested size: 221.02745pt x 187.60231pt.
+Package epstopdf Info: Source file: <Figures/ErrVsTimeP1.eps>
+(epstopdf)                    date: 2018-04-24 06:06:58
+(epstopdf)                    size: 95064 bytes
+(epstopdf)             Output file: <Figures/ErrVsTimeP1-eps-converted-to.pdf>
+(epstopdf)                    date: 2018-04-24 06:16:09
+(epstopdf)                    size: 35343 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/ErrVsTimeP1-eps-co
+nverted-to.pdf Figures/ErrVsTimeP1.eps>
+(epstopdf)             \includegraphics on input line 173.
+Package epstopdf Info: Output file is already uptodate.
+
+<Figures/ErrVsTimeP1-eps-converted-to.pdf, id=23, 691.58376pt x 625.33624pt>
+File: Figures/ErrVsTimeP1-eps-converted-to.pdf Graphic file (type pdf)
+
+<use Figures/ErrVsTimeP1-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/ErrVsTimeP1-eps-converted-to.pdf used on input
+ line 173.
+(pdftex.def)             Requested size: 207.47672pt x 187.60231pt.
+ [3 <./Figures/AErrVsEns1-eps-converted-to.pdf> <./Figures/AErrVsDeltaT1-eps-co
+nverted-to.pdf>]
+Package epstopdf Info: Source file: <Figures/AErrVsMuP1.eps>
+(epstopdf)                    date: 2018-04-24 06:13:31
+(epstopdf)                    size: 32005 bytes
+(epstopdf)             Output file: <Figures/AErrVsMuP1-eps-converted-to.pdf>
+(epstopdf)                    date: 2018-04-24 06:19:34
+(epstopdf)                    size: 11864 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/AErrVsMuP1-eps-con
+verted-to.pdf Figures/AErrVsMuP1.eps>
+(epstopdf)             \includegraphics on input line 181.
+Package epstopdf Info: Output file is already uptodate.
+
+<Figures/AErrVsMuP1-eps-converted-to.pdf, id=37, 676.5275pt x 563.10374pt>
+File: Figures/AErrVsMuP1-eps-converted-to.pdf Graphic file (type pdf)
+
+<use Figures/AErrVsMuP1-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/AErrVsMuP1-eps-converted-to.pdf used on input 
+line 181.
+(pdftex.def)             Requested size: 202.95981pt x 168.93242pt.
+Package epstopdf Info: Source file: <Figures/BiasEstP1.eps>
+(epstopdf)                    date: 2018-04-24 07:59:51
+(epstopdf)                    size: 59949 bytes
+(epstopdf)             Output file: <Figures/BiasEstP1-eps-converted-to.pdf>
+(epstopdf)                    date: 2018-04-24 08:03:10
+(epstopdf)                    size: 22380 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/BiasEstP1-eps-conv
+erted-to.pdf Figures/BiasEstP1.eps>
+(epstopdf)             \includegraphics on input line 189.
+Package epstopdf Info: Output file is already uptodate.
+
+<Figures/BiasEstP1-eps-converted-to.pdf, id=38, 676.5275pt x 563.10374pt>
+File: Figures/BiasEstP1-eps-converted-to.pdf Graphic file (type pdf)
+
+<use Figures/BiasEstP1-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/BiasEstP1-eps-converted-to.pdf used on input l
+ine 189.
+(pdftex.def)             Requested size: 202.95981pt x 168.93242pt.
+ [4 <./Figures/ErrVsTimeP1-eps-converted-to.pdf> <./Figures/AErrVsMuP1-eps-conv
+erted-to.pdf> <./Figures/BiasEstP1-eps-converted-to.pdf>]
+Package epstopdf Info: Source file: <Figures/ErrVsTimeM1_1.eps>
+(epstopdf)                    date: 2018-04-24 05:45:18
+(epstopdf)                    size: 93272 bytes
+(epstopdf)             Output file: <Figures/ErrVsTimeM1_1-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2018-04-24 05:49:36
+(epstopdf)                    size: 35580 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/ErrVsTimeM1_1-eps-
+converted-to.pdf Figures/ErrVsTimeM1_1.eps>
+(epstopdf)             \includegraphics on input line 199.
+Package epstopdf Info: Output file is already uptodate.
+
+<Figures/ErrVsTimeM1_1-eps-converted-to.pdf, id=57, 691.58376pt x 625.33624pt>
+File: Figures/ErrVsTimeM1_1-eps-converted-to.pdf Graphic file (type pdf)
+
+<use Figures/ErrVsTimeM1_1-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/ErrVsTimeM1_1-eps-converted-to.pdf used on inp
+ut line 199.
+(pdftex.def)             Requested size: 207.47672pt x 187.60231pt.
+Package epstopdf Info: Source file: <Figures/AErrVsMuM1_1.eps>
+(epstopdf)                    date: 2018-04-24 06:13:22
+(epstopdf)                    size: 31721 bytes
+(epstopdf)             Output file: <Figures/AErrVsMuM1_1-eps-converted-to.pdf>
+
+(epstopdf)                    date: 2018-04-24 06:16:10
+(epstopdf)                    size: 11498 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/AErrVsMuM1_1-eps-c
+onverted-to.pdf Figures/AErrVsMuM1_1.eps>
+(epstopdf)             \includegraphics on input line 207.
+Package epstopdf Info: Output file is already uptodate.
+
+<Figures/AErrVsMuM1_1-eps-converted-to.pdf, id=58, 676.5275pt x 563.10374pt>
+File: Figures/AErrVsMuM1_1-eps-converted-to.pdf Graphic file (type pdf)
+
+<use Figures/AErrVsMuM1_1-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/AErrVsMuM1_1-eps-converted-to.pdf used on inpu
+t line 207.
+(pdftex.def)             Requested size: 202.95981pt x 168.93242pt.
+Package epstopdf Info: Source file: <Figures/BiasEstM1.eps>
+(epstopdf)                    date: 2018-04-24 07:57:54
+(epstopdf)                    size: 55476 bytes
+(epstopdf)             Output file: <Figures/BiasEstM1-eps-converted-to.pdf>
+(epstopdf)                    date: 2018-04-24 08:06:28
+(epstopdf)                    size: 20793 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/BiasEstM1-eps-conv
+erted-to.pdf Figures/BiasEstM1.eps>
+(epstopdf)             \includegraphics on input line 215.
+Package epstopdf Info: Output file is already uptodate.
+
+<Figures/BiasEstM1-eps-converted-to.pdf, id=59, 676.5275pt x 563.10374pt>
+File: Figures/BiasEstM1-eps-converted-to.pdf Graphic file (type pdf)
+
+<use Figures/BiasEstM1-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/BiasEstM1-eps-converted-to.pdf used on input l
+ine 215.
+(pdftex.def)             Requested size: 202.95981pt x 168.93242pt.
+Package epstopdf Info: Source file: <Figures/ErrVsTimeM2_1.eps>
+(epstopdf)                    date: 2018-04-24 05:45:06
+(epstopdf)                    size: 93526 bytes
+(epstopdf)             Output file: <Figures/ErrVsTimeM2_1-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2018-04-24 05:53:59
+(epstopdf)                    size: 35424 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/ErrVsTimeM2_1-eps-
+converted-to.pdf Figures/ErrVsTimeM2_1.eps>
+(epstopdf)             \includegraphics on input line 225.
+Package epstopdf Info: Output file is already uptodate.
+
+<Figures/ErrVsTimeM2_1-eps-converted-to.pdf, id=60, 691.58376pt x 625.33624pt>
+File: Figures/ErrVsTimeM2_1-eps-converted-to.pdf Graphic file (type pdf)
+
+<use Figures/ErrVsTimeM2_1-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/ErrVsTimeM2_1-eps-converted-to.pdf used on inp
+ut line 225.
+(pdftex.def)             Requested size: 207.47672pt x 187.60231pt.
+ [5 <./Figures/ErrVsTimeM1_1-eps-converted-to.pdf> <./Figures/AErrVsMuM1_1-eps-
+converted-to.pdf> <./Figures/BiasEstM1-eps-converted-to.pdf>]
+Package epstopdf Info: Source file: <Figures/AErrVsMuM2_1.eps>
+(epstopdf)                    date: 2018-04-24 06:13:12
+(epstopdf)                    size: 31735 bytes
+(epstopdf)             Output file: <Figures/AErrVsMuM2_1-eps-converted-to.pdf>
+
+(epstopdf)                    date: 2018-04-24 06:19:35
+(epstopdf)                    size: 11517 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/AErrVsMuM2_1-eps-c
+onverted-to.pdf Figures/AErrVsMuM2_1.eps>
+(epstopdf)             \includegraphics on input line 233.
+Package epstopdf Info: Output file is already uptodate.
+
+<Figures/AErrVsMuM2_1-eps-converted-to.pdf, id=79, 676.5275pt x 563.10374pt>
+File: Figures/AErrVsMuM2_1-eps-converted-to.pdf Graphic file (type pdf)
+
+<use Figures/AErrVsMuM2_1-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/AErrVsMuM2_1-eps-converted-to.pdf used on inpu
+t line 233.
+(pdftex.def)             Requested size: 202.95981pt x 168.93242pt.
+
+Underfull \hbox (badness 1389) in paragraph at lines 234--234
+[]\OT1/cmr/m/n/10 Figure 10: Time-averaged rms anal-y-sis er-ror,
+ []
+
+Package epstopdf Info: Source file: <Figures/BiasEstM2.eps>
+(epstopdf)                    date: 2018-04-24 07:56:06
+(epstopdf)                    size: 55983 bytes
+(epstopdf)             Output file: <Figures/BiasEstM2-eps-converted-to.pdf>
+(epstopdf)                    date: 2018-04-24 08:06:29
+(epstopdf)                    size: 20616 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/BiasEstM2-eps-conv
+erted-to.pdf Figures/BiasEstM2.eps>
+(epstopdf)             \includegraphics on input line 241.
+Package epstopdf Info: Output file is already uptodate.
+<Figures/BiasEstM2-eps-converted-to.pdf, id=80, 676.5275pt x 563.10374pt>
+File: Figures/BiasEstM2-eps-converted-to.pdf Graphic file (type pdf)
+
+<use Figures/BiasEstM2-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/BiasEstM2-eps-converted-to.pdf used on input l
+ine 241.
+(pdftex.def)             Requested size: 202.95981pt x 168.93242pt.
+ [6 <./Figures/ErrVsTimeM2_1-eps-converted-to.pdf> <./Figures/AErrVsMuM2_1-eps-
+converted-to.pdf> <./Figures/BiasEstM2-eps-converted-to.pdf>]
+Package epstopdf Info: Source file: <Figures/ErrVsTimeM3_1.eps>
+(epstopdf)                    date: 2018-04-24 05:44:51
+(epstopdf)                    size: 92914 bytes
+(epstopdf)             Output file: <Figures/ErrVsTimeM3_1-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2018-04-24 05:53:59
+(epstopdf)                    size: 35389 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/ErrVsTimeM3_1-eps-
+converted-to.pdf Figures/ErrVsTimeM3_1.eps>
+(epstopdf)             \includegraphics on input line 251.
+Package epstopdf Info: Output file is already uptodate.
+
+<Figures/ErrVsTimeM3_1-eps-converted-to.pdf, id=99, 691.58376pt x 625.33624pt>
+File: Figures/ErrVsTimeM3_1-eps-converted-to.pdf Graphic file (type pdf)
+
+<use Figures/ErrVsTimeM3_1-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/ErrVsTimeM3_1-eps-converted-to.pdf used on inp
+ut line 251.
+(pdftex.def)             Requested size: 207.47672pt x 187.60231pt.
+
+Underfull \hbox (badness 1389) in paragraph at lines 252--252
+[]\OT1/cmr/m/n/10 Figure 12: Time-averaged rms anal-y-sis er-ror,
+ []
+
+Package epstopdf Info: Source file: <Figures/AErrVsMuM3_1.eps>
+(epstopdf)                    date: 2018-04-24 06:13:01
+(epstopdf)                    size: 31740 bytes
+(epstopdf)             Output file: <Figures/AErrVsMuM3_1-eps-converted-to.pdf>
+
+(epstopdf)                    date: 2018-04-24 06:19:35
+(epstopdf)                    size: 11504 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/AErrVsMuM3_1-eps-c
+onverted-to.pdf Figures/AErrVsMuM3_1.eps>
+(epstopdf)             \includegraphics on input line 259.
+Package epstopdf Info: Output file is already uptodate.
+<Figures/AErrVsMuM3_1-eps-converted-to.pdf, id=100, 676.5275pt x 563.10374pt>
+File: Figures/AErrVsMuM3_1-eps-converted-to.pdf Graphic file (type pdf)
+
+<use Figures/AErrVsMuM3_1-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/AErrVsMuM3_1-eps-converted-to.pdf used on inpu
+t line 259.
+(pdftex.def)             Requested size: 202.95981pt x 168.93242pt.
+
+Underfull \hbox (badness 1389) in paragraph at lines 260--260
+[]\OT1/cmr/m/n/10 Figure 13: Time-averaged rms anal-y-sis er-ror,
+ []
+
+Package epstopdf Info: Source file: <Figures/BiasEstM3.eps>
+(epstopdf)                    date: 2018-04-24 07:54:37
+(epstopdf)                    size: 56253 bytes
+(epstopdf)             Output file: <Figures/BiasEstM3-eps-converted-to.pdf>
+(epstopdf)                    date: 2018-04-24 08:06:29
+(epstopdf)                    size: 20887 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/BiasEstM3-eps-conv
+erted-to.pdf Figures/BiasEstM3.eps>
+(epstopdf)             \includegraphics on input line 267.
+Package epstopdf Info: Output file is already uptodate.
+<Figures/BiasEstM3-eps-converted-to.pdf, id=101, 676.5275pt x 563.10374pt>
+File: Figures/BiasEstM3-eps-converted-to.pdf Graphic file (type pdf)
+
+<use Figures/BiasEstM3-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/BiasEstM3-eps-converted-to.pdf used on input l
+ine 267.
+(pdftex.def)             Requested size: 202.95981pt x 168.93242pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [7 <./Figures/ErrVsTimeM3_1-eps-converted-to.pdf> <./Figures/AErrVsMuM3_1-eps-
+converted-to.pdf> <./Figures/BiasEstM3-eps-converted-to.pdf>] [8
+
+] (./FinalReport.aux) ) 
+Here is how much of TeX's memory you used:
+ 2948 strings out of 493014
+ 41496 string characters out of 6133351
+ 134430 words of memory out of 5000000
+ 6434 multiletter control sequences out of 15000+600000
+ 6857 words of font info for 27 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 38i,22n,32p,873b,218s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/local/texlive/2016/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmbx10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmbx12.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmex10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsf
+onts/cm/cmmi10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmmi5.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmmi7.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmr10.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmr5.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+r7.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy1
+0.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.
+pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pf
+b>
+Output written on FinalReport.pdf (8 pages, 431737 bytes).
+PDF statistics:
+ 164 PDF objects out of 1000 (max. 8388607)
+ 112 compressed objects within 2 object streams
+ 0 named destinations out of 1000 (max. 500000)
+ 71 words of extra memory for PDF output out of 10000 (max. 10000000)
+

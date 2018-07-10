@@ -1,0 +1,92 @@
+\documentclass{report}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsbsy}
+\title{MATH 892 Proposal}
+\author{Colin Guider, Siyang Jing}
+\begin{document}
+\section*{Case1}
+We will study model error in the context of the linear shallow water equations.  The horizontal velocity $u$, vertical velocity $v$, and height $h$ of the fluid are given by
+\begin{align*}
+u(x,y,t) &= -\sin(x)\cos(y)u_0+\cos(y)u_1(t), \\
+v(x,y,t) &= \cos(x)\sin(y)u_0+\cos(y)v_1(t), \\
+h(x,y,t) &= \sin(x)\sin(y)u_0+\sin(y)h_1(t).
+\end{align*}
+The flow parameters $u_0$, $u_1$, $v_1$, $h_1$ satisfy
+\begin{align*}
+\dot{u}_0 &= 0, \\
+\dot{u}_1 &= v_1, \\
+\dot{v}_1 &= -u_1-h_1, \\
+\dot{h}_1 &= v_1.
+\end{align*}
+The position of a fluid particle governed by these equations satisfies
+\begin{align*}
+\dot{x} &= u(x,y,t), \\
+\dot{y} &= v(x,y,t).
+\end{align*}
+The motion of an inertial particle (parameterized by $0 \ll \epsilon < 1$) satisfies
+\begin{align*}
+\epsilon \ddot{x} &= -\dot{x}+u, \\
+\epsilon \ddot{y} &= -\dot{y}+v.
+\end{align*}
+Our goal is to use observations of the position $(x,y)$ of the inertial particle to estimate the flow parameters $(u_0, u_1, v_1, h_1)$.  In the DA algorithm, the forecast model will be given by the fluid particle equations, i.e., the particle will be assumed to have no inertia.  This introduces model error, and we would like to examine the impact of this model error on the performance of the DA algorithm.  We will work with the EnKF, and the Particle Filter (since the state-space is low-dimensional).
+\section*{Case2}
+We will study two types of simple model error with Lorenz 96 model. We will introduce constant deterministic error to the standard Lorenz 96 model and try to use ensemble Kalman filter on an augmented system to improve the performance of data assimilation.
+The Lorenz96 equation is:
+\begin{equation}
+\dot{x_i}=(x_{i+1}-x_{i+2})x_{i-1}-x_{i}+F,\quad i=1,2,...,N
+\end{equation}
+We will use the common choice of $N=40$ and $F=8$ with periodic boundary conditions. For readability, we write the whole system as:
+$\pmb{\dot{x}}=\mathbf{L(x)}$.\\
+The first type error is a constant bias
+\begin{equation*}
+\dot{\pmb{x}}=\pmb{L}(\pmb{x})+\pmb{\zeta}
+\end{equation*}
+For the second type of model error, we assume the true dynamics and the dynamics used for forecasting are associated with a coordinate transformation. For simplicity, we assume the transformation is just a shift of the forecast state to the true state, i.e.,  
+\begin{equation*}
+\dot{\pmb{x}}=\pmb{L}(\pmb{x}+\pmb{\xi})
+\end{equation*}^{•}
+We combine the two types of error to get the following system
+\begin{equation*}
+\dot{\pmb{x}}=\pmb{L}(\pmb{x}+\pmb{\xi})+\pmb{\zeta}
+\end{equation*}
+For simplicity, we assume that $\pmb{\zeta}$ and $\pmb{\xi}$ are both constant in time. Some have suggested that when the error is arguably small, they exhibit behaviors similar to those of the system. Accordingly, we set
+\begin{align*}
+\zeta_i=&A\sin(2\pi\dfrac{i-1}{N})\\
+\xi_i=&B\sin(2\pi\dfrac{i-1}{N}),\quad i=1,...,N
+\end{align*}
+where $A$ and $B$ are constants.
+\subsection*{Model}
+To address the first type of error, we assume the model bias $\pmb{b}_{n}=m(\pmb{x}_{n-1})-\hat{m}(\pmb{x}_{n-1})$ to be constant in time and incorporate it to the augmented system 
+\begin{align*}
+\pmb{x}_{n}^{f}=&\hat{m}(\pmb{x}_{n-1}^{a})+\pmb{b}_{n}^{f}\\
+\pmb{b}_{n}^{f}=&\pmb{b}_{n-1}^{a}
+\end{align*}
+For the second type of error, we use the analysis to model $\hat{\pmb{x}}_n$ instead of the true state $\pmb{x}_n$. Accordingly, we define the bias as
+\begin{equation*}
+\pmb{c}_{n}=m(\pmb{x}_{n-1}^{t})-\hat{m}(\pmb{x}_{n-1}^{m})=m(\pmb{x}_{n-1}^{t})-\hat{m}(\pmb{x}_{n-1}^{t}-\pmb{c}_{n-1})
+\end{equation*}
+We assume $\pmb{c}_n$ is constant in time, and the augmented system then becomes
+\begin{align*}
+\pmb{x}_{n}^{f}=&\hat{m}(\pmb{x}_{n-1}^{a})\\
+\pmb{c}_{n}^{f}=&\pmb{c}_{n-1}^{a}
+\end{align*}
+In such setting, the analysis will model the forecast model state $\hat{\pmb{x}}_{n}$ instead of the true state $\pmb{x}_n$, and therefore the observation should be
+\begin{equation*}
+\pmb{y}_n=H(\hat{\pmb{x}}_n+\pmb{c}_n)
+\end{equation*}
+When we combine the two types of the model errors and try to address them together, we have the following scheme, again, for simplicity, we assume $c_n$ and $b_n$ are constant
+\begin{align*}
+\pmb{x}_{n}^{f}=&\hat{m}(\pmb{x}_{n-1}^{a})+\pmb{b}_{n}^{f}\\
+\pmb{b}_{n}^{f}=&\pmb{b}_{n-1}^{a}\\
+\pmb{c}_{n}^{f}=&\pmb{c}_{n-1}^{a}
+\end{align*}
+Same as in Model 2, the observation operator becomes
+\begin{equation*}
+\pmb{y}_n=H(\hat{\pmb{x}}_n+\pmb{c}_n)
+\end{equation*}
+In each setting of error, we will use ensemble Kalman Filter with perfect model assumption, and with the augmented system setting, to estimate the solution. We will compare the performance of these different methods.\\
+In order for ensemble Kalman filter to work, we will introduce uncorrelated Gaussian noise with zero mean at each step to the observation operator.\\
+We will probably also try particle filter on the same Lorenz 96 equations with a lower dimension.
+\end{document}
