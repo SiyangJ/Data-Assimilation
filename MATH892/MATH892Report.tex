@@ -1,0 +1,102 @@
+\documentclass{report}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsbsy}
+\begin{document}
+\section*{Case2}
+We will study two types of simple model error with Lorenz 96 model. We will introduce constant deterministic error to the standard Lorenz 96 model and try to use ensemble Kalman filter on an augmented system to improve the performance of data assimilation.
+\subsection*{Notation}
+\begin{tabular}{rl}
+True model:& $m$\\
+Forecast model:& $\hat{m}$\\
+True state:& $\pmb{x}_n$\\
+Model state:& $\hat{\pmb{x}}_n$\\
+Observation Operator:& $H:\pmb{x}_n\mapsto\pmb{y}_n$
+\end{tabular}\\
+The Lorenz96 equation is:
+\begin{equation}
+\dot{x_i}=(x_{i+1}-x_{i+2})x_{i-1}-x_{i}+F,\quad i=1,2,...,N
+\end{equation}
+We will use the common choice of $N=40$ and $F=8$ with periodic boundary conditions. For readability, we write the whole system as:
+\begin{equation}
+\pmb{\dot{x}}=\mathbf{L(x)}
+\end{equation}
+\subsection*{Types of error}
+\begin{equation}
+\dot{\pmb{x}}=\pmb{L}(\pmb{x})+\pmb{\zeta}
+\end{equation}
+\begin{equation}
+\dot{\pmb{x}}=\pmb{L}(\pmb{x}+\pmb{\xi})
+\end{equation}
+\begin{equation}
+\dot{\pmb{x}}=\pmb{L}(\pmb{x}+\pmb{\xi})+\pmb{\zeta}
+\end{equation}
+For simplicity, we assume that $\pmb{\zeta}$ and $\pmb{\xi}$ are both constant in time. Some have suggested that when the error is arguably small, they exhibit behaviors similar to those of the system. Accordingly, we set
+\begin{align}
+\zeta_i=&A\sin(2\pi\dfrac{i-1}{N})\\
+\xi_i=&B\sin(2\pi\dfrac{i-1}{N}),\quad i=1,...,N
+\end{align}
+where $A$ and $B$ are constants.
+\subsection*{Model}
+\subsubsection*{Model 1}
+To address the first type of error, we first define the model bias:
+\begin{equation}
+\pmb{b}_{n}=m(\pmb{x}_{n-1})-\hat{m}(\pmb{x}_{n-1})
+\end{equation}
+We therefore incorporate $\pmb{b}_n$ to the augmented system:
+\begin{align}
+\pmb{x}_{n}^{f}=&\hat{m}(\pmb{x}_{n-1}^{a})+\pmb{b}_{n}^{f}\\
+\pmb{b}_{n}^{f}=&f_{b}(\pmb{x}_{n-1}^{a},\pmb{b}_{n}^{a})
+\end{align}
+In the case where $\pmb{\zeta}$ is constant, we assume $\pmb{b}_n$ is constant too, and then
+\begin{equation}
+\pmb{b}_{n}^{f}=f_{b}(\pmb{x}_{n-1}^{a},\pmb{b}_{n-1}^{a})=\pmb{b}_{n-1}^{a}
+\end{equation}
+\subsubsection*{Model 2}
+For the second type of error, we use the analysis to model $\hat{\pmb{x}}_n$ instead of the true state $\pmb{x}_n$. We define the bias as
+\begin{equation}
+\pmb{c}_{n}=m(\pmb{x}_{n-1}^{t})-\hat{m}(\pmb{x}_{n-1}^{m})=m(\pmb{x}_{n-1}^{t})-\hat{m}(\pmb{x}_{n-1}^{t}-\pmb{c}_{n-1})
+\end{equation}
+The augmented system then becomes
+\begin{align}
+\pmb{x}_{n}^{f}=&\hat{m}(\pmb{x}_{n-1}^{a})\\
+\pmb{c}_{n}^{f}=&f_{c}(\pmb{x}_{n-1}^{a},\pmb{c}_{n}^{a})
+\end{align}
+For simplicity, we assume we know $\pmb{\xi}$ is constant, which means $\pmb{c}_n$ should be constant, and then
+\begin{equation}
+\pmb{c}_{n}^{f}=f_{c}(\pmb{x}_{n-1}^{a},\pmb{c}_{n-1}^{a})=\pmb{c}_{n-1}^{a}
+\end{equation} 
+Note that in such setting, the analysis will model the model trajectory $\hat{\pmb{x}}_{n}$ instead of the true trajectory $\pmb{x}_n$, and therefore the observation should be:
+\begin{equation}
+\pmb{y}_n=H(\hat{\pmb{x}}_n+\pmb{c}_n)
+\end{equation}
+\subsubsection{Model 3}
+When we combine the two types of the model errors and try to address them together, we have the following scheme:
+\begin{align}
+\pmb{x}_{n}^{f}=&\hat{m}(\pmb{x}_{n-1}^{a})+\pmb{b}_{n}^{f}\\
+\pmb{b}_{n}^{f}=&f_{b}(\pmb{x}_{n-1}^{a},\pmb{b}_{n-1}^{a},\pmb{c}_{n-1}^{a})\\
+\pmb{c}_{n}^{f}=&f_{c}(\pmb{x}_{n-1}^{a},\pmb{b}_{n-1}^{a},\pmb{c}_{n-1}^{a})
+\end{align}
+Again, for simplicity, we assume $c_n$ and $b_n$ are constant, i.e.,
+\begin{align}
+\pmb{b}_{n}^{f}=&f_{b}(\pmb{x}_{n-1}^{a},\pmb{b}_{n-1}^{a})=\pmb{b}_{n-1}^{a}\\
+\pmb{c}_{n}^{f}=&f_{c}(\pmb{x}_{n-1}^{a},\pmb{c}_{n-1}^{a})=\pmb{c}_{n-1}^{a}
+\end{align}
+Same as in Model 2, the observation operator becomes
+\begin{equation}
+\pmb{y}_n=H(\hat{\pmb{x}}_n+\pmb{c}_n)
+\end{equation}
+\subsection*{Numerical methods}
+In each setting of error, we will use ensemble Kalman Filter with perfect model assumption, i.e. without an augmented system, and with Model 1, 2, and 3, to estimate the solution. We will compare the performance of these different methods.\\
+In order for ensemble Kalman filter to work, we will introduce uncorrelated Gaussian noise with zero mean at each step to the observation operator.\\
+We will use root-mean-square of the analysis error to measure the performance of the different methods, where the analysis error of Model 1 is defined as
+\begin{equation}
+\pmb{e}_n=\bar{\pmb{x}}_n^a-\pmb{x}_n,
+\end{equation}
+and the analysis error of Model 2 and 3 is
+\begin{equation}
+\pmb{e}_n=\bar{\pmb{x}}_n^a+\bar{\pmb{c}}_n-\pmb{x}_n,
+\end{equation}
+where $\bar{\pmb{x}}_n^a$ is the ensemble mean of the analysis at each step and $\bar{\pmb{c}}_n$ the ensemble mean of the bias $\pmb{c}_n$
+\end{document}
