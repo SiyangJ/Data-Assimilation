@@ -1,0 +1,78 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{textcomp}
+\begin{document}
+
+\section{Introduction}
+\subsection{Basics}
+Invariant sets: $A\subseteq U,$ s.t. $A\cdot t=A$\\
+
+Long time behavior: $\omega(x)=\{y|x\cdot t_n\to y\text{ for some }t_n\to\infty\}$\\
+
+Stability or attraction: \\
+Fixed point $p$ is stable, if $\forall\epsilon>0,\exists\delta>0,$ s.t. $B_{\delta}(p)\cdot t\subset B_{\epsilon}(p),\forall t\geqslant 0$\\
+
+Fixed point $p$ is attracting, if (1) stable, (2) $\exists\epsilon >0,x\in B_{\epsilon}(p)\Longrightarrow\omega(x)=\{p\}$\\
+
+Ex. Stable: surrounded by orbits, not coming in. Attracting: actually goes to the point. Unstable: like saddle points.\\
+
+Exercise: work out definitions for periodic orbit and invariant sets in general.\\
+
+\subsubsection{Dimension} 
+\begin{itemize}
+	\item in 1, just need to figure out FP's and the signs of the flows.\\
+	\item in 2, organized by FP and periodic orbits. Poincare-Bendixson theorem: $\omega(x)\text{ compact }\Longrightarrow\omega(x)\text{ contains a FP, or is a periodic orbit.}$
+	\item Chaotic dynamics: near trajectories separated after certain time
+\end{itemize}
+
+\subsection{Linearization}
+$p$ FP, to understand the dynamics near $p$
+\begin{itemize}
+	\item step1: Linearization of $p$, i.e. $Df(p)$, linear system: $\dot{y}=Df(p)y$, dynamics of this one tells something of the original.
+	\item Question: to what extent?
+	\item dynamics of linear system: set $A=Df(p)$, spectrum of $A$, $\sigma(A)=$eigenvalues of $A$, we have $n$ eigenvalues counting multiplicity.
+	\item decomposition of $\sigma(A)=\sigma_{-}(A)\bigcup\sigma_{0}(A)\bigcup\sigma_{+}(A)$, decompose $\mathbb{R}^n=E_{-}\bigoplus E_{0}\bigoplus E_{+}$, each invariant under the corresponding spectrum.
+	\item $\sigma_{-}(A)$ part: exponentially decay, $\sigma_{+}(A)$ part: exponentially decay for $t\to-\infty$, i.e. exponential growth, $\sigma_{0}(A)$ part: undetermined.
+	\item $E_{-}$ stable subspace, $E_{0}$ center subspace, $E_{+}$ unstable subspace
+\end{itemize}
+
+\subsection{Invariant Manifold}
+Dynamics near a FP, $p,f(p)=0,\dot{y}=Df(p)y,A=Df(p),\sigma(A)$\\
+Goes to nonlinearity locally, "curved" versions of $E_{-/0/+}$, $W_{loc}^{s/c/u}$, invariant under the flow relative to a neighborhood of $p$.\\
+Graph for respective subspace to a complement subspace; each is tangent to their subspace \\
+\begin{itemize}
+	\item $W_{loc}^s$ trajectory decays to $p$ exponentially $t\to\infty$
+	\item $W_{loc}^u$ trajectory decays to $p$ exponentially $t\to -\infty$
+	\item $W_{loc}^c$ trajectory that does neither
+	\item stable/unstable manifolds are determined uniquely on exponential decay condition
+\end{itemize}
+Global: $W^s=\bigcup_{t\leq 0}W_{loc}^s\cdot t$, the other two similarly\\
+
+\subsection{Bifurcation Theory}
+Question: How does dynamics change as parameter varies.\\
+$\dot{x}=f(x,\mu),x\in\mathbb{R}^n,\mu\in\mathbb{R}$
+
+\subsubsection{Basic Bifurcations}
+\begin{itemize}
+	\item n=1
+	\begin{itemize}
+		\item saddle-node: stable+unstable \textrightarrow  combine to unstable \textrightarrow  disappear
+		\item transcritical bifurcation: stable+unstable \textrightarrow  combine to unstable \textrightarrow  unstable+stable
+		\item pitchfork bifurcation: one splits to 3
+	\end{itemize}
+	\item n=2
+	\begin{itemize}
+		\item Hopf: attracting fp, then attracting periodic orbit, and the fp becomes unstable
+	\end{itemize}
+	\item Note:
+	\begin{itemize}
+		\item the pitchfork and the Hopf described above are supercritical, we can also have subcritical
+		\item can happen in higher dimensions as well
+	\end{itemize}
+	
+\end{itemize}
+
+\end{document}
