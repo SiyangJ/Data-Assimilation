@@ -1,0 +1,76 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\begin{document}
+
+\section{Model Error}
+
+Model error vs. observation error?\\
+
+Satellite example\\
+
+
+model the radiance? direct observation:\\
+then observation simple\\
+
+model the temperature? indirect observation:\\
+what's the error of the inverse problem\\
+
+The different models make different dynamics.\\
+
+Linear model nonlinear H, reverse, both nonlinear?\\
+
+\section{Hurricane Prediction}
+Parameter depends on the location / time.\\
+
+Augmenting system? \\
+
+Dynamics, attracting fixed pts, bistable dynamics\\
+
+Sensitivity to the time when the observations are made?\\
+Rapid Change Occurs?
+
+\section{DA in adaptive mesh}
+
+$\dot{u}_i=F(\{u_i\}),\dot{x}_i=G(\{x_i\},\{u_i\})$
+
+Sea ice model.\\
+
+AM to solve pde's\\
+
+change rapidly some points, finer?\\
+
+Augment the mesh variables, double the size; physical model\\
+
+Fix a reference mesh, project the ensembles to this mesh.\\
+
+Point: very little work in adaptive mesh; the model of DA is really the computational model\\
+
+Comparison made on different grids?? Mean and covariance? Apples and oranges?\\
+
+\section{Dimension Reduction}
+Decomposition between slow and fast compositions => two systems\\
+Strongly negative and positive Lyaponov exponents\\
+
+Lower the dimension, project the observations to the reduced space.\\
+
+Dynamically split the model without a priori knowing how to.\\
+
+Lyaponov vectors?\\
+
+pdf in high dimension, concentrated in the center? Sample? \\
+
+Connection between dynamics of the problem and the pdf?\\
+
+Diffusion maps???\\
+
+\section{Machine Learning}
+
+
+
+
+
+
+\end{document}
