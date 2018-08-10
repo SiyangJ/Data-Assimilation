@@ -30,6 +30,17 @@
 #     * 1: ObsOp_40_20 with Inv_20_10
 # * Usage Flags:
 #   * SAVEDATA: indicator for whether to save data or not
+#   * STAGE: indicates how to proceed, default is 0 **TODO**
+#     * 0: Start from the beginning  
+#     * 1: Attractor selected  
+#     * 2: Truth generated  
+#     * 3: Observation generated  
+#     * Parameters introduced by STAGE:
+#     * xattr = None
+#     * truestate = None
+#     * truetraj = None
+#     * trueobs = None
+#     * yobs = None
 #   
 # _Output_:  
 # Truth and observations
@@ -60,6 +71,12 @@ import AuxFuncs
 def DataGen(
     #### Paramters
     ## Notebook usage flags
+    STAGE = 0,
+    xattr = None,
+    truestate = None,
+    truetraj = None,
+    trueobs = None,
+    yobs = None,
     RSEED = 215,
     HTYPE = 0,
     SAVEDATA = False,
@@ -106,36 +123,37 @@ def DataGen(
         def H(x):
             return AuxFuncs.Inv_20_10(AuxFuncs.ObsOp_40_20(x))      
 
-    ## find an initial condition on the attractor
+    if STAGE < 1:
+        ## find an initial condition on the attractor
+        xrand = np.random.rand(ndim)
+        ttrans = np.linspace(0,100,1000)
+        xtrans = scp.integrate.odeint(TM, xrand, ttrans, (pars,))
 
-    xrand = np.random.rand(ndim)
-    ttrans = np.linspace(0,100,1000)
-    xtrans = scp.integrate.odeint(TM, xrand, ttrans, (pars,))
-
-    t = np.linspace(0,50,100000)
-    xattr = xtrans[-1,:]
-
-    ## Select sigmaobs based on lone trajectory
-    # tlong = np.linspace(0,100,10000)
-    # xlong = scp.integrate.odeint(TM, xattr, tlong, (pars,))
-    # sigmaobs = np.abs(np.max(xlong[:,0]) - np.min(xlong[:,0]))/50
-
-    ## generate true trajectory
-
+        t = np.linspace(0,50,100000)
+        xattr = xtrans[-1,:]
+    
     tend = nobs * deltaobs
     tobs = np.linspace(0, tend, num=nobs+1)
     ttraj = np.linspace(0, tend, num=nobs*100+1)
-    truetraj = scp.integrate.odeint(TM, xattr, ttraj, (pars,))
-    truestate = truetraj[::100,:]
-
-    truestate = truestate.T
-
-    ## generate observations
-
-    trueobs = H(truestate)
+    
+    if STAGE < 2 or truestate is None:
+        ## generate true trajectory
+        truetraj = scp.integrate.odeint(TM, xattr, ttraj, (pars,))
+        truestate = truetraj[::100,:]
+        truestate = truestate.T
+    
+    if xattr is None:
+        xattr = truestate[:,0]
+    
+    if STAGE < 3 or trueobs is None:
+        ## generate observations
+        trueobs = H(truestate)
+    
     robs = sigmaobs*sigmaobs
     Robsmat = np.identity(dobs)*robs
-    yobs = trueobs + np.random.multivariate_normal(np.zeros(dobs), Robsmat,nobs+1).T
+    
+    if yobs is None:
+        yobs = trueobs + np.random.multivariate_normal(np.zeros(dobs), Robsmat,nobs+1).T
     
     '''
     SAVEDATA: indicator for whether to save data or not
