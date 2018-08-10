@@ -208,6 +208,8 @@ def EnKF(
     
     if xattr is None:
         xattr = truestate[:,0]
+    
+    truestate = truestate[:,:nobs+1]
         
     if PLOTTING:
         ## plot a long trajectory...
@@ -223,11 +225,14 @@ def EnKF(
         ## generate observations
         trueobs = H(truestate)
     
+    trueobs = trueobs[:,:nobs+1]
     robs = sigmaobs*sigmaobs
     Robsmat = np.identity(dobs)*robs
     
     if yobs is None:
         yobs = trueobs + np.random.multivariate_normal(np.zeros(dobs), Robsmat,nobs+1).T
+        
+    yobs = yobs[:,:nobs+1]
 
     ## Containers
     xfm = np.zeros([nobs+1, ndim])
