@@ -47,7 +47,7 @@
 #           3. yfm, yfcov  
 #           4. statistics  
 #     * 2: Flags, Paramters, Statistics (No running data)
-#     * 3: haha
+#     * 3: Everything plus truestate and trueobs
 #   
 # _Output_:  
 # Forecast/analysis absolute error averaged over variables and time (from the 30th observation step as the starting point after DA stabilizes)
@@ -515,6 +515,46 @@ def EnKF(
                 nens=nens,
                 ferr=ferr,
                  
+                ## Statistics
+                xferravgxt  =xferravgxt,  xaerravgxt  =xaerravgxt,
+                xferr10avgxt=xferr10avgxt,xaerr10avgxt=xaerr10avgxt,
+                xferr30avgxt=xferr30avgxt,xaerr30avgxt=xaerr30avgxt)
+    elif SAVEDATA==3:
+        np.savez(data_dir,
+                ## Paramters
+                # Notebook usage flags
+                DESC=DESC,
+                RSEED=RSEED,
+                HTYPE=HTYPE,
+                HERROR=HERROR,
+                LINEAR=LINEAR,
+                FORECAST_ERROR=FORECAST_ERROR,
+                INFLATION=INFLATION,
+                # Model parameters
+                ndim=ndim,
+                pars=pars,
+                # Observation paramters
+                nobs=nobs,
+                deltaobs=deltaobs,
+                dobs=dobs,
+                Hmat=Hmat,
+                sigmaobs=sigmaobs,
+
+                ## DA paramters
+                infl_lin=infl_lin,
+                infl_nlin=infl_nlin,
+                sigmainit=sigmainit,
+                nens=nens,
+                ferr=ferr,
+                 
+                ## Truth
+                truestate=truestate,
+                trueobs=trueobs,
+                yobs=yobs,
+                ## Running Data
+                xfm=xfm,xfcov=xfcov,
+                xam=xam,xacov=xacov,
+                yfm=yfm,yfcov=yfcov,
                 ## Statistics
                 xferravgxt  =xferravgxt,  xaerravgxt  =xaerravgxt,
                 xferr10avgxt=xferr10avgxt,xaerr10avgxt=xaerr10avgxt,
