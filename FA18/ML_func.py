@@ -1,3 +1,58 @@
+'''
+## Summary:
+**Name:** Functionalize Maching Learning Procedure  
+**Author:** Siyang Jing  
+**Organization:** UNC-CH  
+**License:** WTFPL  
+
+**Reference:**
+1. TensorFlow's keras tutorial
+1. The author's other codes
+1. Relevant numerous papers
+  
+**Description:**  
+This file prepares a function ML  
+_Input_:
+* Parameters:
+  * train_data
+  * train_labels
+  * test_data
+  * test_labels
+  * model: default is none, will build a 2 layer FNN with 20 neurons
+  * EPOCHS: default is 1000, seems a good number
+  * Other model fitting parameters
+* Flags:
+  * MLPLOTTING: if enabled, will plot figures as described below
+  * MLDEBUG: if enabled, will print ... for each 100 epochs
+  
+_Output_:  
+1. model: a tensorflow keras model
+1. mean absolute error
+1. accuracy score
+
+_Saved Files_:   
+For now, doesn't save anything.  
+
+_Plots_:
+1. Loss versus epochs
+1. Accuracy versus epochs
+1. Print test loss, mae, and acc
+
+**Requirements:**
+1. Relevant Python modules
+1. AuxFuncs, which defines the following:  
+  1. Observation operator  
+  1. Stupid inverse function  
+  1. Lorenz96 as model
+1. DataGenerator, which generates data based on the models in AuxFuncs
+
+## TODO list:
+1. Write a function to parse model fitting parameters
+1. Arbitrary statistics type
+1. Save the model _optional_
+1. Figure out what acc score means for regression model
+'''
+
 import tensorflow as tf
 from tensorflow import keras
 
