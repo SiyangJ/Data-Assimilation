@@ -90,7 +90,6 @@
 # 3. Implement pipeline
 # 4. Functionize all subparts
 
-import matplotlib.pyplot as plt
 import numpy as np
 import scipy as scp
 import scipy.integrate
@@ -136,6 +135,9 @@ def EnKF(
     sigmainit=1.3,
     nens=100,
     ferr=1.0):
+    
+    if PLOTTING:
+        import matplotlib.pyplot as plt
     
     np.random.seed(RSEED)
     

@@ -69,8 +69,6 @@ def ObsOp_40_20(x):
     
             y[4*i:4*i+4,j] = np.array([p*q,p2+q2,p2,q2]).T;
     return y
-
-
 '''
 %OBS Summary of this function goes here
 %   x: each column is a state vector.
