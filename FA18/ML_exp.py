@@ -18,11 +18,11 @@ if __name__=="__main__":
     data_arr = pickle.load(f)
     f.close()
     f = open(args.pickle_dir,'wb+') 
-    print(data_arr)
+    #print(data_arr)
     to_append = [[args.RSEED,args.sigmaobs,mae,acc]]
-    print(to_append)
-    np.append(data_arr,to_append,axis=0)
-    print(data_arr)
+    #print(to_append)
+    data_arr = np.append(data_arr,to_append,axis=0)
+    #print(data_arr)
     pickle.dump(data_arr,f)
     f.close()
     
