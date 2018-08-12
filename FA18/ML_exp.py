@@ -10,7 +10,7 @@ if __name__=="__main__":
     
     args = parser.parse_args()
     
-    _,mae,acc=ML_pipeline.ML_exp(RSEED=args.RSEED,sigmaobs=args.sigmaobs,nobs=2000)
+    mae,acc=ML_pipeline.ML_exp(RSEED=args.RSEED,sigmaobs=args.sigmaobs,nobs=2000)
     
     import pickle
     import numpy as np
