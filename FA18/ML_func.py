@@ -54,7 +54,7 @@ _Plots_:
 '''
 
 import tensorflow as tf
-from tensorflow import keras
+from tensorflow.contrib import keras
 
 import numpy as np
 
