@@ -155,7 +155,9 @@ def MakeHML(model):
 def ML_exp(
     RSEED,
     sigmaobs,
-    nobs=1000
+    nobs=1000,
+    SAVEDATA=False,
+    DATADIR=None
     ):
     X,Y,Y_noise = DataGen(nobs=nobs,RSEED=RSEED,sigmaobs=sigmaobs)
 
@@ -174,7 +176,7 @@ def ML_exp(
              MLDEBUG=False,
              MLPLOTTING=False)
     
-    print('.',end='')
+    #print('.',end='')
     
     return b,c
 
