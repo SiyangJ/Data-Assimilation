@@ -200,4 +200,5 @@ sigmaobs_range = [0,0.5,1]
 
 if __name__=="__main__":
     mae_sigmaobs, acc_sigmaobs = main(RSEED_range,sigmaobs_range)
+    print(mae_sigmaobs,acc_sigmaobs)
 
