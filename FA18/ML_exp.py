@@ -14,8 +14,11 @@ if __name__=="__main__":
     
     import pickle
     import numpy as np
-    with open(args.pickle_dir,'wb+') as f:
-        data_arr = pickle.load(f)
-        np.append(data_arr,[[args.RSEED,args.sigmaobs,mae,acc]],axis=0)
-        pickle.dump(data_arr,f)
+    f = open(args.pickle_dir,'rb+') 
+    data_arr = pickle.load(f)
+    f.close()
+    f = open(args.pickle_dir,'wb+') 
+    np.append(data_arr,[[args.RSEED,args.sigmaobs,mae,acc]],axis=0)
+    pickle.dump(data_arr,f)
+    f.close()
     
