@@ -60,7 +60,6 @@ import numpy as np
 
 from EnKF_func import *
 from AuxFuncs import *
-import matplotlib.pyplot as plt
 
 def ML(train_data,train_labels,
        test_data,test_labels,
@@ -102,6 +101,7 @@ def ML(train_data,train_labels,
     [loss, mae, acc] = model.evaluate(test_data, test_labels, verbose=0)
 
     if MLPLOTTING:
+        import matplotlib.pyplot as plt
         def plot_history(history):
             plt.figure()
             plt.xlabel('Epoch')
