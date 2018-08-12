@@ -13,8 +13,9 @@ if __name__=="__main__":
     _,mae,acc=ML_pipeline.ML_exp(RSEED=args.RSEED,sigmaobs=args.sigmaobs,nobs=2000)
     
     import pickle
+    import numpy as np
     with open(args.pickle_dir,'rb+') as f:
         data_arr = pickle.load(f)
-        data_arr.append([args.RSEED,args.sigmaobs,mae,acc],axis=0)
+        np.append(data_arr,[args.RSEED,args.sigmaobs,mae,acc],axis=0)
         pickle.dump(data_arr,f)
     
