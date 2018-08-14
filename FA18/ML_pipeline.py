@@ -160,7 +160,7 @@ def ML_exp(
     EPOCHS=EPOCHS,
     train_split=TRAIN_SPLIT,
     normalize=NORMALIZE,
-    loss=Loss,
+    loss=LOSS,
     layers=[20,20]
     ):
     X,Y,Y_noise = DataGen(nobs=nobs,RSEED=RSEED,sigmaobs=sigmaobs)
