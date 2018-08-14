@@ -90,17 +90,16 @@ NORMALIZE = False
 LOSS = 'mse'
 EPOCHS = 1000
 
-def build_model():
-    model = keras.Sequential([
-    keras.layers.Dense(20, activation=tf.nn.relu, 
-                       input_shape=(40,)),
-    keras.layers.Dense(20, activation=tf.nn.relu),
-    keras.layers.Dense(20)
-    ])
+def build_model(loss=Loss,layers=[20,20]):
+    model = keras.Sequential()
+    model.add(keras.layers.Dense(layers[0], 
+                                 activation=tf.nn.relu, 
+                                 input_shape=(40,)))
+    for num in layers[1:]:
+        model.add(keras.layers.Dense(num, activation=tf.nn.relu))
+    model.add(keras.layers.Dense(20))
 
-    #optimizer = tf.train.RMSPropOptimizer(0.001)
-
-    model.compile(loss=LOSS,
+    model.compile(loss=loss,
                 optimizer='adam',
                 metrics=['mae','acc'])
     return model
@@ -153,11 +152,16 @@ def MakeHML(model):
 
 
 def ML_exp(
-    RSEED,
-    sigmaobs,
+    RSEED=215,
+    sigmaobs=0.9,
     nobs=1000,
     SAVEDATA=False,
-    DATADIR=None
+    DATADIR=None,
+    EPOCHS=EPOCHS,
+    train_split=TRAIN_SPLIT,
+    normalize=NORMALIZE,
+    loss=Loss,
+    layers=[20,20]
     ):
     X,Y,Y_noise = DataGen(nobs=nobs,RSEED=RSEED,sigmaobs=sigmaobs)
 
@@ -166,9 +170,11 @@ def ML_exp(
     XX = np.transpose(X)
     YY = np.transpose(Y_noise)
 
-    train_data,train_labels,test_data,test_labels = PrepareData(XX,YY)
+    train_data,train_labels,test_data,test_labels = PrepareData(XX,YY,
+                                                                train_split=train_split,
+                                                                normalize=normalize)
 
-    model1 = build_model()
+    model1 = build_model(layers=layers,loss=loss)
 
     _,b,c=ML(train_data,train_labels,test_data,test_labels,
              model=model1,
