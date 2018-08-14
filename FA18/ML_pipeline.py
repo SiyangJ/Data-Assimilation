@@ -90,7 +90,7 @@ NORMALIZE = False
 LOSS = 'mse'
 EPOCHS = 1000
 
-def build_model(loss=Loss,layers=[20,20]):
+def build_model(loss=LOSS,layers=[20,20]):
     model = keras.Sequential()
     model.add(keras.layers.Dense(layers[0], 
                                  activation=tf.nn.relu, 
