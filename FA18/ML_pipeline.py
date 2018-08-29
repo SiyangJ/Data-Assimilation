@@ -157,6 +157,8 @@ def ML_exp(
     nobs=1000,
     SAVEDATA=False,
     DATADIR=None,
+    SAVEMODEL = False,
+    MODELDIR = None,
     EPOCHS=EPOCHS,
     train_split=TRAIN_SPLIT,
     normalize=NORMALIZE,
@@ -176,11 +178,14 @@ def ML_exp(
 
     model1 = build_model(layers=layers,loss=loss)
 
-    _,b,c=ML(train_data,train_labels,test_data,test_labels,
+    m,b,c=ML(train_data,train_labels,test_data,test_labels,
              model=model1,
              EPOCHS=EPOCHS,
              MLDEBUG=False,
              MLPLOTTING=False)
+    
+    if SAVEMODEL:
+        m.save(MODELDIR)
     
     #print('.',end='')
     
