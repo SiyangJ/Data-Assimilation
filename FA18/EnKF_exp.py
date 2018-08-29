@@ -45,6 +45,7 @@ if __name__=="__main__":
                                SAVEDATA=3,
                                data_dir=data_dir,
                                HTYPE=HTYPE,
+                               HERROR=True,
                                dobs=20,
                                H =AuxFuncs.ObsOp_40_20,
                                Hm=Hm,
