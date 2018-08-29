@@ -46,7 +46,7 @@ if __name__=="__main__":
                                data_dir=data_dir,
                                HTYPE=HTYPE,
                                dobs=20,
-                               H =AuxFuncs.ObsOp_40_20，
+                               H =AuxFuncs.ObsOp_40_20,
                                Hm=Hm,
                                infl_nlin=args.infl_nlin,
                                sigmainit=args.sigmainit,
