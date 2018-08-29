@@ -24,4 +24,4 @@ if __name__=="__main__":
     import pandas as pd
     df = pd.read_csv(args.csv_dir)
     df.loc[df.shape[0]] = ([model_dir, args.RSEED,args.sigmaobs,args.nobs,mae,acc])
-    df.to_csv(args.csv_dir)
+    df.to_csv(args.csv_dir,index=False)
