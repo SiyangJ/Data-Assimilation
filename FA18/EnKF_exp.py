@@ -56,7 +56,7 @@ if __name__=="__main__":
     
     import pandas as pd
     df = pd.read_csv(args.csv_dir)
-    df.loc[df.shape[0]] = ([data_dir, model_dir,
+    df.loc[df.shape[0]] = ([data_dir, args.model_dir,
                             args.RSEED,     args.sigmaobs, args.nobs, args.deltaobs,
                             args.sigmainit, args.nens,     args.ferr, args.infl_nlin,
                             f_all, a_all, f_10, a_10, f_30, a_30])
