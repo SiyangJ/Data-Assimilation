@@ -13,7 +13,7 @@ if __name__=="__main__":
     
     args = parser.parse_args()
     
-    model_dir = args.model_dir+'m{:.3f}.csv'.format(time.time())
+    model_dir = args.model_dir+'m{:.3f}.h5'.format(time.time())
     
     mae,acc=ML_pipeline.ML_exp(RSEED=args.RSEED,
                                sigmaobs=args.sigmaobs,
