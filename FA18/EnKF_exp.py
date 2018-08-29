@@ -34,7 +34,7 @@ if __name__=="__main__":
     if args.HML:
         HTYPE = None
         m = keras.models.load_model(args.model_dir)
-        H = ML_pipeline.MakeHML(m)
+        Hm = ML_pipeline.MakeHML(m)
     
     data_dir = args.data_dir+'da{:.3f}.npz'.format(time.time())
     
@@ -45,7 +45,9 @@ if __name__=="__main__":
                                SAVEDATA=3,
                                data_dir=data_dir,
                                HTYPE=HTYPE,
-                               H=H,
+                               dobs=20,
+                               H =AuxFuncs.ObsOp_40_20，
+                               Hm=Hm,
                                infl_nlin=args.infl_nlin,
                                sigmainit=args.sigmainit,
                                nens=args.nens,
