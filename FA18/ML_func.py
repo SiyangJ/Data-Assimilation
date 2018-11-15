@@ -54,7 +54,12 @@ _Plots_:
 '''
 
 import tensorflow as tf
-from tensorflow.contrib import keras
+
+print("Running ML part, tensorflow version is "+tf.__version__)
+
+#from tensorflow.contrib import keras
+
+import keras
 
 import numpy as np
 
