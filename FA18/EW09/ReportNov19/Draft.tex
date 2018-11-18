@@ -1,8 +1,93 @@
-\documentclass[10pt,a4paper]{article}
-\usepackage[utf8]{inputenc}
+\documentclass[10pt]{article}
 \usepackage{amsmath}
 \usepackage{amsfonts}
-\usepackage{amssymb}
 \begin{document}
-•
+
+\section{The Larger DA Problem}
+
+An accurate estimate of the sea ice state is very important. Many  previous studies assimilate ice concentration retrieved from 
+
+In \cite{Scott12} a method for directly assimilating brightness temperatures in a sea ice model was developed and showed slight improvements in the model forecast most notably during the melt season. Their method directly modeled the emissivity of the sea ice, not a trivial task, and made use of an atmospheric radiative transfer model to map the state vector to the satellite brightness temperature. This is computationally expensive and complex. The assimilation was also sensitive to how the emissivity was modeled. I think we aim to do something similar but we want not to model the observation operator but learn it. The inputs to our operator should be whatever ice state variables we have and the atmospheric conditions. The output should be satellite radiance. Once learned, the advantage here is that our operator could be independent of what the actual sea ice emissivities are, adaptive to a specific sea ice models state variables, and computationally inexpensive. To build the data set I think we might want to initialize a given sea ice model from a good set of ground observations and pair those initialize state variables with the relevant satellite microwave observations. 
+
+For this we would need to pair optical images of sufficient resolution with thickness data, say from Ice sat 1 and Ice sat 2 with estimates of thermodynamic variables and atmospheric conditions, perhaps from weather forecast data, with satellite radiances. Likely we may have to do several mappings of this info to the ice state variables to account for error in the process. 
+
+\section{Model}
+
+The original ODE of Eisenmann and Weatlauffer is given by:
+
+{\small
+\begin{align}
+\frac{dE}{dt}=[1-\alpha(E,\alpha_{m})]F_s(t)-F_0(t)+F_{co_2}-F_T(t)\frac{E}{c_{ml} H_{ml}}+F_B \label{ew} \\
+\textrm{where} \quad \alpha(E,\alpha_m)=\frac{\alpha_{ml}+\alpha_m}{2}+\frac{\alpha_{ml}-\alpha_m}{2}\tanh\left(\frac{E}{L_i h_{c}} \right) \label{alph}
+\end{align}}
+
+ In equation (\ref{ew}), $F_s(t)$ is the incoming solar radiation, $F_0(t)$ is the amount of long wave radiation(heat) that escapes to space $F_{co_2}$ is the amount of long wave radiation reflected back from clouds and $co_2$ , $F_T(t)$ has to do with heat exchange with lower latitudes, $F_B$ is the heat input from the ocean below the ice. While these terms are written to be time dependent we can take time averaged values, especially if we wish to consider just a month during the melt season. Monthly averaged values for these quantities can be found in the Appendix that goes with the paper, using these we would have an autonomous ODE, which is usually nice. Equation (\ref{alph}) represents the albedo (the percent of incoming solar radiation the ice reflects) and depends on energy of the ice as a whole. In this equation $\alpha_{ml}$ is the albedo of the ocean mixed layer, $L_i$ the latent heat of fusion for ice, and $h_c$ a chosen characteristic ice thickness which is used to control the smoothness of the parameterization. As $E$ goes up $\alpha$ goes down, this is how they take into account the effect of melt ponds. In their model $\alpha_m$ is the maximum attainable albedo of the ice which they take to be $0.6$. In reality it can be as high as $0.8$ with snow on top of it in cold conditions. This is the part we will modify to create two regimes for our DA problem. The basic argument will be the following, In very cold conditions the maximum attainable albedo of the surface should {\it tend} toward $0.8$ with snow fall and other processes keeping the albedo high. When the ice is in warmer conditions, like melting, the maximum attainable albedo should tend to something lower and there should be a competition of values. Initially as the ice begins to pond the albedo drives down pretty quickly, however as the ice temperature increases the melt ponds drain out and the albedo of the ice recovers very quickly.  %The idea here is that one may have ponds which can make the albedo close to $0.2$ drain and it can then head back to $0.6$. So when we are in warm conditions we will have the maximum attainable albedo {\it tend} toward $0.6$. 
+What we will want here is for energies away from zero, but warming conditions, for the albedo to tend to something like say $0.2$, but closer to $E=0$, when the ice is permeable and the ponds can drain exposing the ice surface, the maximum attainable albedo should tend toward that of bare ice $0.6$.
+
+In order to accomplish this we will model the rates of change of the maximum attainable albedo with logistic models setting the carrying capacity to be $0.8$ (eq. \ref{coldalph}) in ``cold" conditions and using competing models with carrying capacities of $0.2$ and  $0.6$ (eq. \ref{warmalph}) in ``warm" conditions. We also let the growth or decay rate in these equations depend on the energy $E$ and some scaling factor $K$. In cold conditions we want the maximum attainable albedo $\alpha_m$ to approach $0.8$ rapidly when the energy is largely negative. For this reason the growth rate is taken with the energy in the numerator (eq. \ref{coldalph}). In warm conditions we wish the rate that $\alpha_m$ approaches $0.2$ to be faster when the energy is away from zero but to approach $0.6$ faster when the energy is near 0.  As a result, we take the energy to be in the denominator with the addition of 1 to avoid singularities at $E=0$ (eq \ref{warmalph}) for the logistic model with a carrying capacity of $0.6$ and the energy in the numerator for the logistic model with a carrying capacity of $0.2$ . 
+To define the discontinuity boundary we need a smooth function $H: \mathbb{R}^2 \rightarrow \mathbb{R}$ for which $H=0$ on the boundary between dynamics  of region $S_1 \in \mathbb{R}^2$ and separate region $S_2 \in \mathbb{R}^2$. One possible choice for $H$ can simply be where the albedo of the system $\alpha(E,\alpha_m)$ crosses the $\alpha=0.6$ threshold. In this case we would define $H$ as,
+\begin{align}
+H(E,\alpha_m)=\alpha(E,\alpha_m)-0.6 \label{H}.
+\end{align}
+Which will define our two sets of dynamics,
+{\small
+\begin{align}
+&\frac{dE}{dt}=[1-\alpha(E,\alpha_{m})]F_s(t)-F_0(t)+F_{co_2}-F_T(t)\frac{E}{c_{ml} H_{ml}}+F_B &\nonumber \\
+&\frac{d \alpha_{m}}{dt}= \frac{E^2}{K^2}\alpha_{m}\left(1-\frac{\alpha_{m}}{0.8}\right) + \frac{K^2}{1+E^2}\alpha_{m}\left(1-\frac{\alpha_{m}}{0.6}\right) \quad \textrm{in}  \quad S_1=\{(E,\alpha_m): H(E,\alpha_m)>0\} &\label{coldalph} \\
+&\frac{dE}{dt}=[1-\alpha(E,\alpha_{m})]F_s(t)-F_0(t)+F_{co_2}-F_T(t)\frac{E}{c_{ml} H_{ml}}+F_B &\nonumber \\
+&\frac{ d \alpha_{m}}{dt}=\frac{K^2}{1+E^2}\alpha_{m}\left(1-\frac{\alpha_{m}}{0.6}\right) +\frac{E^2}{K^2}\alpha_{m}\left(1-\frac{\alpha_{m}}{0.2}\right) \quad \textrm{in}  \quad S_2=\{(E,\alpha_m): H(E,\alpha_m)<0\}&\label{warmalph}
+\end{align}}
+
+
+In the current implementation of the matlab code I am using time dependent seasonal values for the $F's$ they are represented by Fourier series fit to the monthly averages of each of their values over a season. We can do autonomous though, choosing average values over say a month or something. However they dynamics with the time dependence are more interesting and using the {\it disode45} function I found online means we don't have to code up the Filippov system ourselves for that messy case. However if we need to we can make use of the ideas below. 
+
+
+On the sliding set we have a third system that we can study, the sliding system. Let $x=(E,\alpha_m)$  and $\vec{f}_1(x)$ be the dynamics in equations (\ref{coldalph}) and $\vec{f}_2(x)$ that in equations (\ref{warmalph}). We will define the boundary points with the set,
+
+\begin{align}
+\Sigma=\{ x \in \mathbb{R}^n \ : H(x)=0\}. \label{boundary}
+\end{align}
+We introduce the function,
+\begin{align}
+\sigma(x)=\left( \nabla H \cdot \vec{f}_1(x) \right) \left( \nabla H \cdot \vec{f}_2(x) \right) \label{sigdot}
+\end{align}
+and use it to define the sets,
+\begin{align}
+&\textrm{Crossing Points Set:}& \quad &\Sigma_c =\{ x \in \Sigma : \sigma(x)>0\}&\\
+&\textrm{Sliding Points Set:}&\quad &\Sigma_s= \{ x \in \Sigma: \sigma(x)\leq 0\}& \\
+ &\textrm{Regular Sliding Points Set:}& \quad &\hat{\Sigma}_s=\{x\in \Sigma_s : \nabla H \cdot (\vec{f}_2(x) -\vec{f}_1(x)) \neq 0\}&
+\end{align} 
+
+On the set $\hat{\Sigma}_s$ we can define the sliding system,
+\begin{align}
+\frac{dx}{dt}=\lambda(x)\vec{f}_1(x) + (1-\lambda(x))\vec{f}_2(x) \quad x\in \hat{\Sigma}_s\\
+\lambda(x)=\frac{\nabla H \cdot \vec{f}_2(x)}{\nabla H \cdot \left( \vec{f}_2(x)-\vec{f}_1(x)\right)}
+\end{align}
+
+
+
+For our particular problem we will need to define some kind of ``concentration" from our state variables. We will also need to define a non-unique satellite seen concentration and a proxy for the measured satellite radiances.
+\begin{align}
+&\textrm{ ``Ice concentration":} \hspace{0.1cm}  C_i=1-\left(\frac{0.8-\frac{1}{2}\left( \alpha_m+\alpha(E,\alpha_m)\right)}{0.6}\right)&\\
+&\textrm{``Pond concentration":} \hspace{0.1cm} C_p=1-\frac{\alpha(E,\alpha_m)}{\alpha_m}&\\
+&\textrm{``Satellite Radiances":} \hspace{0.1cm}
+\begin{bmatrix}
+|E\alpha_m|\\ 
+\alpha_m-\alpha(E,\alpha_m) \\
+\alpha(E,\alpha_m)|E|\\
+(0.5+0.4\tanh(\frac{50-E}{10}))(E+273.15)\\
+C_i C_p
+\end{bmatrix}&\\
+&\textrm{``Satellite retrieval concentration":}\hspace{0.1cm} C_{sat}=max(0,C_i-C_p) &
+\end{align}
+
+Here we are taking the concentration of ice $C_i$ to be the one minus the percent difference between the physically highest attainable albedo of $0.8$ and the average of the maximum attainable albedo and the current albedo. The concentration here would approach 1 when the system is in a very cold state and the average is close to 0.8. The pond concentration is one minus the ratio of the current albedo to the maximum surface albedo. The idea here is that a low albedo at time $t$ compared to the maximum attainable albedo should mean the surface is covered in ponds. For the satellite radiances I have somewhat arbitrarily chosen combinations of the state variables which give non-unique results around $E=0$, the energy where ponds form and drain. For the satellite retrieved concentration we just take the maximum of zero or the difference between ice concentration and pond concentration. The idea here is that ponds obscure the ice. We can change this though...
+
+\section{}
+
+
+\bibliography{Reference}
+\bibliographystyle{ieeetr}
+
+
 \end{document}
