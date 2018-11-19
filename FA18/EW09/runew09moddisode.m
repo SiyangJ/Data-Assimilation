@@ -17,21 +17,28 @@ Rad(:,2)=y(:,2)-a;
 Rad(:,3)=(a).*abs(y(:,1));
 Rad(:,4)=(.5+.4.*tanh((-(y(:,1)-50)/10))).*((y(:,1))+273.15);
 Rad(:,5)=Cp.*Ci;
-figure
+figure('NumberTitle', 'off', 'Name', sprintf('Fc = %d',i),...
+       'rend','painters','pos',[10 10 900 600])
 subplot(2,3,1)
 plot(y(:,1),y(:,2))
+title('State space trajectory')
 subplot(2,3,2)
 plot(t,y(:,1))
+title('Energy versus time')
 subplot(2,3,3)
 plot(y(:,1),y(:,2))
 hold on
 plot(y(:,1),a);
+title('$$\alpha_m$$ and $$\alpha$$ versus $$E$$','interpreter','latex')
 subplot(2,3,4)
-plot(y(:,1),Ci) 
+plot(y(:,1),Ci)
+title('Ice concentration versus energy')
 subplot(2,3,5)
 plot(y(:,1),Cp)
+title('Pond fraction versus energy')
 subplot(2,3,6)
 plot(y(:,1),Ci-Csat)
+title('Ice concentration error versus energy')
 %figure;
 %plot(ydis(:,1),ydis(:,2))
 
@@ -49,17 +56,16 @@ state(:,5)=Cp;
 % Rade(:,4)=Rad(:,4)+normrnd(0,mean(Rad(:,4))/max(Rad(:,4)),m,1);
 % Rade(:,5)=Rad(:,5)+normrnd(0,mean(Rad(:,5))/max(Rad(:,5)),m,1);
 
-Rade(:,1)=Rad(:,1)+normrnd(0,mean(Rad(:,1))/2,m,1);
-Rade(:,2)=Rad(:,2)+normrnd(0,mean(Rad(:,2))/2,m,1);
-Rade(:,3)=Rad(:,3)+normrnd(0,mean(Rad(:,3))/2,m,1);
-Rade(:,4)=Rad(:,4)+normrnd(0,mean(Rad(:,4))/2,m,1);
-Rade(:,5)=Rad(:,5)+normrnd(0,mean(Rad(:,5))/2,m,1);
-
-
-dlmwrite(strcat('Data/statevariables',num2str(Fc),'.txt'),state)
-dlmwrite(strcat('Data/radiances',num2str(Fc),'.txt'),Rad)
-dlmwrite(strcat('Data/radiances_error',num2str(Fc),'.txt'),Rade)
-
+% Rade(:,1)=Rad(:,1)+normrnd(0,mean(Rad(:,1))/2,m,1);
+% Rade(:,2)=Rad(:,2)+normrnd(0,mean(Rad(:,2))/2,m,1);
+% Rade(:,3)=Rad(:,3)+normrnd(0,mean(Rad(:,3))/2,m,1);
+% Rade(:,4)=Rad(:,4)+normrnd(0,mean(Rad(:,4))/2,m,1);
+% Rade(:,5)=Rad(:,5)+normrnd(0,mean(Rad(:,5))/2,m,1);
+% 
+% 
+% dlmwrite(strcat('Data/statevariables',num2str(Fc),'.txt'),state)
+% dlmwrite(strcat('Data/radiances',num2str(Fc),'.txt'),Rad)
+% dlmwrite(strcat('Data/radiances_error',num2str(Fc),'.txt'),Rade)
 
 clear
 end;
