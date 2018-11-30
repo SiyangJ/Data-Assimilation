@@ -30,7 +30,7 @@ def DataGeneration():
                 xinit = M(xinit,i,i+1)
             tinit = 100
     
-    if resume_from_last and truestate:
+    if resume_from_last and CFP['DataGeneration'].getboolean('truestate'):
         truestate = last_data['truestate']
     else:
         num_data = CFP['DataGeneration'].getint('num')
@@ -49,13 +49,33 @@ def DataGeneration():
              truestate=truestate)
     
 def ObservationGeneration():
+    random_seed = CFP['ObservationGeneration'].getint('random_seed')
+    np.random.seed(random_seed)
     H = getattr(ObservationOperator,CFP['ObservationGeneration']['observation_operator'])
-    if STAGE < 3 or trueobs is None:
-        ## generate observations
+    dobs = CFP['ObservationGeneration'].getint('dimension_observation')
+    sigmaobs = CFP['ObservationGeneration'].getfloat('sigma_observation')
+    data = np.load(CFP['ObservationGeneration']['data_dir'])
+    truestate = data['truestate']
+    
+    resume_from_last = CFP['ObservationGeneration'].getboolean('resume_from_last')
+    if resume_from_last:
+        last_obs = np.load(CFP['ObservationGeneration']['last_dir'])
+    
+    if resume_from_last and CFP['ObservationGeneration'].getboolean('true_observation'):
+        trueobs = last_obs['true_observation']
+    else:
         trueobs = H(truestate)
     
     robs = sigmaobs*sigmaobs
     Robsmat = np.identity(dobs)*robs
     
-    if yobs is None:
-        yobs = trueobs + np.random.multivariate_normal(np.zeros(dobs), Robsmat,nobs+1).T
+    if resume_from_last and CFP['ObservationGeneration'].getboolean('true_observation'):
+        yobs = last_obs['output_observation']
+    else:
+        nobs = trueobs.shape[0]
+        yobs = trueobs + np.random.multivariate_normal(np.zeros(dobs), Robsmat,nobs)
+    np.savez(CFP['ObservationGeneration']['save_dir'],
+             random_seed=random_seed,
+             true_observation=trueobs,
+             output_observation=yobs)
+    
