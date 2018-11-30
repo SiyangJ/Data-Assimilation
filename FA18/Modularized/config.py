@@ -3,9 +3,9 @@ import sys
 import tensorflow as tf
 import configparser
 
-#import matlab.engine
+import matlab.engine
 
-#MATLAB_ENGINE = matlab.engine.start_matlab()
+MATLAB_ENGINE = matlab.engine.start_matlab()
 FLAGS = tf.app.flags.FLAGS
 
 ## Configuration File Parse
