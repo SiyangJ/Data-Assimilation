@@ -233,7 +233,7 @@ def setup_tensorflow_test():
 
     # Initialize rng with a deterministic seed
     with sess.graph.as_default():
-        tf.set_random_seed(FLAGS.random_seed)
+        tf.set_random_seed(CFP['MachineLearning'].getint('random_seed'))
         
     random.seed(CFP['MachineLearning'].getint('random_seed'))
     np.random.seed(CFP['MachineLearning'].getint('random_seed'))
@@ -291,7 +291,7 @@ def predict(td):
     start_time  = time.time()
     feed_dict = { td.X_variable : _X, 
                  td.Y_variable : _Y}
-    ops = [td.pred,]
+    ops = [td.pred,td.loss]
     [pred,loss] = td.sess.run(ops, feed_dict=feed_dict)
     elapsed = int(time.time() - start_time)
     print('Predict complete, cost [%3d] seconds' % (elapsed))

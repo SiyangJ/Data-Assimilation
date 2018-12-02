@@ -11,7 +11,7 @@ FLAGS = tf.app.flags.FLAGS
 ## Configuration File Parse
 CONFIG_DIR = './config.ini'
 if len(sys.argv)>2 and sys.argv[2][-4:]=='.ini':
-    CONFIG_DIR = sys.argv[1]
+    CONFIG_DIR = sys.argv[2]
 CFP = configparser.ConfigParser()
 CFP.read(CONFIG_DIR)
 
