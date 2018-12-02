@@ -1,5 +1,4 @@
 import numpy as np
-import os.path
 import scipy.misc
 import h5py
 import pandas as pd
@@ -8,8 +7,17 @@ import time
 import random
 import numpy as np
 import os
+import sys
 from copy import deepcopy
 from config import CFP
+
+class TrainData(object):
+    def __init__(self, dictionary):
+        self.__dict__.update(dictionary)
+        
+class TestData(object):
+    def __init__(self, dictionary):
+        self.__dict__.update(dictionary)
 
 def cal_loss(pred,truth):
     loss=tf.reduce_mean(tf.square(pred-truth))
@@ -71,166 +79,130 @@ def create_optimizers(train_loss):
     train_minimize = train_opti.minimize(train_loss, name='loss_minimize', global_step=global_step)
     return train_minimize, learning_rate, global_step
 
-def _PrepareData():
-    data_X = pd.read_hdf(FLAGS.data_path,FLAGS.X_ID).values
-    data_Y = pd.read_hdf(FLAGS.data_path,FLAGS.Y_ID).values
+def _OrganizeData():
+    X = []
+    Y = []
     
-    X,y = [],[]
-    total_batch = int(data_X.shape[0] / FLAGS.NUM_PER_DAY)
-    for i in range(total_batch):
-        X.append(data_X[i*FLAGS.NUM_PER_DAY:(i+1)*FLAGS.NUM_PER_DAY,:])
-        y.append(data_Y[i*FLAGS.NUM_PER_DAY:(i+1)*FLAGS.NUM_PER_DAY,:])
+    for_evaluation = sys.argv[1] in ['inference','evaluation']
+    CFP_sec = CFP['MLEvaluation'] if for_evaluation else CFP['MLTraining']
+    data_dir = CFP_sec['data_source']
+    obs_dir = CFP_sec['observation_source']
     
-    train_size=int(FLAGS.sep*len(X))
-    split_index=[1]*train_size
-    split_index.extend([0] * (len(X) - train_size))
-    np.random.shuffle(split_index)
+    for f in os.listdir(data_dir):
+        f_full = os.path.join(data_dir,f)
+        if os.path.isfile(f_full) and (f.find('.npz')>=0 or f.find('.npy')>=0):
+            try:
+                X.append(np.load(f_full)['truestate'])
+            except:
+                continue    
+    for f in os.listdir(obs_dir):
+        f_full = os.path.join(obs_dir,f)
+        if os.path.isfile(f_full) and (f.find('.npz')>=0 or f.find('.npy')>=0):
+            try:
+                Y.append(np.load(f_full)['output_observation'])
+            except:
+                continue
+    return X,Y
 
-    #division all_data into train and test data
-    train_X,train_y,test_X,test_y=[],[],[],[]
-    for i,v in enumerate(split_index):
-        if v==0:
-            test_X.append(X[i])
-            test_y.append(y[i])
-        else:
-            train_X.append(X[i])
-            train_y.append(y[i])
-    train_X=np.array(train_X).astype('float32')
-    train_y=np.array(train_y).astype('float32')
-    test_X=np.array(test_X).astype('float32')
-    test_y=np.array(test_y).astype('float32')
-    return train_X,train_y,test_X,test_y
+_X,_Y = _OrganizeData()
+
+def _PrepareData():    
+    L = _X.shape[0]
+    sep = CFP['MLTraining'].getfloat('validation_proportion')
+    
+    train_size=int(L * sep)
+    index = np.arange(L)
+    np.random.shuffle(index)
+    train_index = index[:train_size]
+    test_index = index[train_size:]
+    
+    return _X[train_index,:],_Y[train_index,:],_X[test_index,:],_Y[test_index,:]
 
 _train_X,_train_Y,_test_X,_test_Y = _PrepareData()
 
+def data_generator(istrain=True,batch_size=0):
+    X = _train_X if istrain else _test_X
+    Y = _train_Y if istrain else _test_Y
+    L = X.shape[0]
+    i = 0
+    ## TODO
+    ## batch method
+    while True:
+        if batch_size == 0:
+            yield X,Y
+            continue
+        if i == L:
+            yield None,None
+            i = 0
+            continue
+        yield X[[i,],:],Y[[i,],:]
+        i += 1
+
 def get_training_and_testing_generators():
-    batch_size = FLAGS.batch_size
+    batch_size = CFP['MLTraining'].getint('batch_size')
     training_generator = data_generator(istrain=True, batch_size=batch_size)
     validation_generator = data_generator(istrain=False, batch_size=batch_size)
     
     return training_generator, validation_generator
 
-def data_generator(istrain=True,batch_size=1):
-    X = _train_X if istrain else _test_X
-    Y = _train_Y if istrain else _test_Y
-    L = X.shape[0]
-    S = FLAGS.NUM_PER_DAY
-    d = FLAGS.seq_length
-    # assert L>=batch_size, "Can't generate batch!"
-    while True:
-        
-        i = np.random.randint(0,L,batch_size)
-        j = np.random.randint(0,S-d+1,batch_size)
-        
-        ret_X,ret_Y=[],[]
-        
-        for b in range(batch_size):
-            ret_X.append(X[i[b]][j[b]:j[b]+d])
-            ret_Y.append(Y[i[b]][j[b]:j[b]+d])
-            
-        ret_X=np.array(ret_X).astype('float32')
-        ret_Y=np.array(ret_Y).astype('float32')
-        yield ret_X,ret_Y
-
-## A very crude version.
-## Just for experiment.
-def predict(td):
-    preds = []
-    X_test = []
-    Y_test = []
-    start_time  = time.time()
-    _, test_generator = get_training_and_testing_generators()
-    ## TODO
-    ## Just for the purpose of testing.
-    patch_num = 20
-    print('>> begin predicting for each patch')
-    for _i in  range(patch_num):
-        _test_X, _test_Y = next(test_generator)
-        feed_dict = { td.X_variable : _test_X, 
-                     td.Y_variable : _test_Y}
-        ops = [td.pred,]
-        [pred,] = td.sess.run(ops, feed_dict=feed_dict)
-        preds.append(pred)
-        X_test.append(_test_X)
-        Y_test.append(_test_Y)
-        
-    array_pred = np.asarray(preds)
-    #print '>> begin vote in overlapped patch..'
-    #seg_res, possibilty_map = vote_overlapped_patch(patches_pred, index, d,h,w)
-    # seconds
-    elapsed = int(time.time() - start_time)
-
-    print('Predict complete, cost [%3d] seconds' % (elapsed))
-
-    return X_test, Y_test, array_pred
-
-
 def _save_checkpoint(train_data,batch):
     td = train_data
     saver = tf.train.Saver()
-    model_path = os.path.join(FLAGS.save_path,'snapshot_'+str(batch))
+    model_path = os.path.join(CFP['MachineLearning']['save_dir'],'checkpoint_'+str(batch))
     
-    save_path = saver.save(td.sess, model_path) #, global_step=batch)
-    print("Model saved in file: %s" % save_path)   
+    save_path = saver.save(td.sess, model_path)
     print ('Model saved in file: %s' % saver.last_checkpoints)
 
 def train_model(train_data):
     td = train_data
-
     summaries = tf.summary.merge_all()
 
     # if the sess is restored from last checkpoint, do not need to 
-    if FLAGS.restore_from_last:
+    if CFP['MLTraining'].getboolean('restore_from_last'):
         saver = tf.train.Saver()
-        model_path = tf.train.latest_checkpoint(FLAGS.last_trained_checkpoint)
-        print('training: restore last checkpoint from:%s' % model_path)
+        model_path = tf.train.latest_checkpoint(CFP['MLTraining']['last_trained_checkpoint'])
+        print('Machine Learning Training: restore last checkpoint from:%s' % model_path)
         saver.restore(td.sess, model_path)
     else:
         init_op = tf.global_variables_initializer()
-        print('training: global variable initialization...')
+        print('Machine Learning Training: global variable initialization...')
         td.sess.run(init_op)
 
-    lrval       = FLAGS.lr
+    lrval       = CFP['MLTraining'].getfloat('initial_learning_rate')
     start_time  = time.time()
     done  = False
-    batch = 0
-    
+    epoch = 0    
     training_generator, testing_generator = get_training_and_testing_generators()
 
+    decay_after = CFP['MLTraining'].getint('decay_after')
+    decay_ratio = CFP['MLTraining'].getfloat('decay_ratio')
+    max_epoch = CFP['MLTraining'].getint('epochs')
+    save_every_n = CFP['MLTraining'].getint('save_every_n')
+    summary_every_n = CFP['MLTraining'].getint('summary_every_n')
+    
     while not done:
-        batch += 1
-        
+        epoch += 1        
         train_X, train_Y = next(training_generator)
-
         feed_dict = {td.X_variable : train_X, 
                      td.Y_variable : train_Y, 
                      td.learning_rate : lrval}
-
+        
         cur_time = time.ctime()
         
-        if batch % 10 == 0:
+        if epoch % summary_every_n == 0:
             ops = [td.train_minimize, td.loss, summaries,] 
             [_, loss, summary_vis] = td.sess.run(ops, feed_dict=feed_dict)
 
-            print('[%25s], iter [%4d], Lr[%1.8f] ,loss[%3.10f]'
-                            % (cur_time, batch, lrval, loss) )
+            print('[%25s], epoch [%4d], lr[%1.8f] ,loss[%3.10f]'
+                            % (cur_time, epoch, lrval, loss) )
             
             # Update learning rate
-            if batch % FLAGS.learning_rate_reduce_life == 0:
-                lrval *= FLAGS.learning_rate_percentage
+            if epoch % decay_after == 0:
+                lrval *= decay_ratio
 
-            td.summary_writer.add_summary(summary_vis, batch)
+            td.summary_writer.add_summary(summary_vis, epoch)
             
-            ############## Editted Nov 04 by Siyang Jing
-            ############## Try to add validation loss
-            
-            val_X, val_Y = next(testing_generator)
-            
-            ############## Nov 14 working notes
-            ## Severe bug
-            ## How to enable different batch size???
-            ## and different seq_length???
-            
+            val_X, val_Y = next(testing_generator)            
             val_feed_dict = {td.X_variable : val_X, 
                              td.Y_variable : val_Y}
             
@@ -238,119 +210,72 @@ def train_model(train_data):
             [val_loss, val_summary] = td.sess.run(val_ops, feed_dict=val_feed_dict)
 
             print('[%25s], validation: iter [%4d], loss[%3.10f]'
-                            % (cur_time, batch, val_loss) )
+                            % (cur_time, epoch, val_loss) )
             
-            td.val_sum_writer.add_summary(val_summary, batch)
+            td.val_sum_writer.add_summary(val_summary, epoch)
             
         else:
             ops = [td.train_minimize, td.loss] 
             [_, loss] = td.sess.run(ops, feed_dict=feed_dict)
             
-        if batch % FLAGS.checkpoint_period == 0:
-            _save_checkpoint(td, batch)
+        if epoch % save_every_n == 0:
+            _save_checkpoint(td, epoch)
 
-        if batch  >= FLAGS.epoch_size:
+        if epoch  >= max_epoch:
             done = True
 
     _save_checkpoint(td, batch)
     print('Finished training!')
-    
-def prepare_dirs(delete_train_dir=False):
-    ## Theoretically, should do nothing. It's just test.
-    pass
-    '''    
-    # Create checkpoint dir (do not delete anything)
-    if not tf.gfile.Exists(FLAGS.save_path):
-        tf.gfile.MakeDirs(FLAGS.save_path)
-    
-    # Cleanup train dir
-    if delete_train_dir:
-        if tf.gfile.Exists(FLAGS.save_path):
-            tf.gfile.DeleteRecursively(FLAGS.save_path)
-        tf.gfile.MakeDirs(FLAGS.save_path)
-    '''
 
-def setup_tensorflow():
+def setup_tensorflow_test():
     
-    config = tf.ConfigProto()
-    sess = tf.Session(config=config)
+    tfconfig = tf.ConfigProto()
+    sess = tf.Session(config=tfconfig)
 
     # Initialize rng with a deterministic seed
     with sess.graph.as_default():
         tf.set_random_seed(FLAGS.random_seed)
         
-    random.seed(FLAGS.random_seed)
-    np.random.seed(FLAGS.random_seed)
+    random.seed(CFP['MachineLearning'].getint('random_seed'))
+    np.random.seed(CFP['MachineLearning'].getint('random_seed'))
 
-    tf.gfile.MkDir('%s/test_log' % (FLAGS.save_path,))
-    summary_writer = tf.summary.FileWriter('%s/test_log' % (FLAGS.save_path,), sess.graph)
+    tf.gfile.MkDir('%s/test_log' % (CFP['MachineLearning']['save_dir'],))
+    summary_writer = tf.summary.FileWriter('%s/test_log' % (CFP['MachineLearning']['save_dir'],), sess.graph)
     return sess, summary_writer
 
-class TestData(object):
-    def __init__(self, dictionary):
-        self.__dict__.update(dictionary)
-
-def test():
-    prepare_dirs(delete_train_dir=False)
-    sess, summary_writer = setup_tensorflow()
-
-    (X_variable, Y_variable,
-     pred, loss, final_loss,
-     gene_vars) = create_model(train_phase=True)
-
-    saver = tf.train.Saver()
-    ## Load from the model save path instead of the last_trained_checkpoint, 
-    ## which is supposed to be the save_path of last training
-    model_path = tf.train.latest_checkpoint(FLAGS.save_path)
-    print('saver restore from:%s' % model_path)
-    saver.restore(sess, model_path)
-    
-    test_data = TestData(locals())
-    X_test, Y_test, array_pred = predict(test_data)
-    return X_test, Y_test, array_pred
-
-
 def prepare_dirs(delete_train_dir=False):
     # Create checkpoint dir (do not delete anything)
-    if not tf.gfile.Exists(FLAGS.save_path):
-        tf.gfile.MakeDirs(FLAGS.save_path)
+    if not tf.gfile.Exists(CFP['MachineLearning']['save_dir']):
+        tf.gfile.MakeDirs(CFP['MachineLearning']['save_dir'])
     
     # Cleanup train dir
     if delete_train_dir:
-        if tf.gfile.Exists(FLAGS.save_path):
-            tf.gfile.DeleteRecursively(FLAGS.save_path)
-        tf.gfile.MakeDirs(FLAGS.save_path)
+        if tf.gfile.Exists(CFP['MachineLearning']['save_dir']):
+            tf.gfile.DeleteRecursively(CFP['MachineLearning']['save_dir'])
+        tf.gfile.MakeDirs(CFP['MachineLearning']['save_dir'])
 
-def setup_tensorflow():
+def setup_tensorflow_train():
     
-    config = tf.ConfigProto()
-    sess = tf.Session(config=config)
+    tfconfig = tf.ConfigProto()
+    sess = tf.Session(config=tfconfig)
 
     # Initialize rng with a deterministic seed
     with sess.graph.as_default():
-        tf.set_random_seed(FLAGS.random_seed)
+        tf.set_random_seed(CFP['MachineLearning'].getint('random_seed'))
         
-    random.seed(FLAGS.random_seed)
-    np.random.seed(FLAGS.random_seed)
+    random.seed(CFP['MachineLearning'].getint('random_seed'))
+    np.random.seed(CFP['MachineLearning'].getint('random_seed'))
 
-    ## Editted by Siyang Jing on Nov 4
-    ## Try to add validation summary writer
-    tf.gfile.MkDir('%s/training_log' % (FLAGS.save_path,))
-    tf.gfile.MkDir('%s/validation_log' % (FLAGS.save_path,))
-    summary_writer = tf.summary.FileWriter('%s/training_log' % (FLAGS.save_path,), sess.graph)
-    val_sum_writer = tf.summary.FileWriter('%s/validation_log' % (FLAGS.save_path,), sess.graph)
+    tf.gfile.MkDir('%s/training_log' % (CFP['MachineLearning']['save_dir'],))
+    tf.gfile.MkDir('%s/validation_log' % (CFP['MachineLearning']['save_dir'],))
+    summary_writer = tf.summary.FileWriter('%s/training_log' % (CFP['MachineLearning']['save_dir'],), sess.graph)
+    val_sum_writer = tf.summary.FileWriter('%s/validation_log' % (CFP['MachineLearning']['save_dir'],), sess.graph)
 
     return sess, summary_writer, val_sum_writer
 
-class TrainData(object):
-    def __init__(self, dictionary):
-        self.__dict__.update(dictionary)
-
-
 def train():
     prepare_dirs(delete_train_dir=False)
-    sess, summary_writer, val_sum_writer = setup_tensorflow()
-
+    sess, summary_writer, val_sum_writer = setup_tensorflow_train()
 
     (X_variable, Y_variable,
      pred, loss, final_loss,
@@ -360,7 +285,39 @@ def train():
 
     train_data = TrainData(locals())
     train_model(train_data)
+    
+## A very crude version.
+## Just for experiment.
+def predict(td):
+    start_time  = time.time()
+    feed_dict = { td.X_variable : _X, 
+                 td.Y_variable : _Y}
+    ops = [td.pred,]
+    [pred,loss] = td.sess.run(ops, feed_dict=feed_dict)
+    elapsed = int(time.time() - start_time)
+    print('Predict complete, cost [%3d] seconds' % (elapsed))
 
+    return pred,loss  
+
+def test():
+    prepare_dirs(delete_train_dir=False)
+    sess, summary_writer = setup_tensorflow_test()
+
+    (X_variable, Y_variable,
+     pred, loss, final_loss,
+     gene_vars) = create_model(train_phase=True)
+
+    saver = tf.train.Saver()
+    model_path = tf.train.latest_checkpoint(CFP['MachineLearning']['save_dir'])
+    print('saver restore from:%s' % model_path)
+    saver.restore(sess, model_path)
+    
+    test_data = TestData(locals())
+    pred,loss = predict(test_data)
+    evals = {'MSE':loss,}
+    if CFP['MLEvaluation'].getboolean('save_predict'):
+        np.savez(CFP['MLEvaluation']['save_dir'],X=_X,Y=_Y,predict=pred,evaluation=evals)
+    return pred,loss
 
 def main(argv=None):
     train()
