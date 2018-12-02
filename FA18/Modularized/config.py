@@ -16,3 +16,9 @@ CFP = configparser.ConfigParser()
 CFP.read(CONFIG_DIR)
 
 
+def ResetValue(section,name,value):
+    CFP[section].update({name:value})
+    
+    
+def ReadConfigFile(path=CONFIG_DIR):
+    CFP.read(path)

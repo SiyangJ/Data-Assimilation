@@ -27,8 +27,8 @@ def create_model(train_phase=True):
     x_size = CFP['MachineLearning'].getint('input_dim')
     y_size = CFP['MachineLearning'].getint('output_dim')
     
-    input_shape = (1,x_size)    
-    output_shape = (1,y_size)
+    input_shape = [None,x_size]    
+    output_shape = [None,y_size]
     
     old_vars = tf.global_variables()
     
@@ -80,28 +80,27 @@ def create_optimizers(train_loss):
     return train_minimize, learning_rate, global_step
 
 def _OrganizeData():
-    X = []
-    Y = []
+    
+    X = np.empty([0,CFP['MachineLearning'].getint('input_dim')])
+    Y = np.empty([0,CFP['MachineLearning'].getint('output_dim')])
     
     for_evaluation = sys.argv[1] in ['inference','evaluation']
     CFP_sec = CFP['MLEvaluation'] if for_evaluation else CFP['MLTraining']
     data_dir = CFP_sec['data_source']
     obs_dir = CFP_sec['observation_source']
-    
-    for f in os.listdir(data_dir):
-        f_full = os.path.join(data_dir,f)
-        if os.path.isfile(f_full) and (f.find('.npz')>=0 or f.find('.npy')>=0):
-            try:
-                X.append(np.load(f_full)['truestate'])
-            except:
-                continue    
+     
     for f in os.listdir(obs_dir):
         f_full = os.path.join(obs_dir,f)
         if os.path.isfile(f_full) and (f.find('.npz')>=0 or f.find('.npy')>=0):
             try:
-                Y.append(np.load(f_full)['output_observation'])
+                Yfile = np.load(f_full)
+                Y = np.append(Y,Yfile['output_observation'],axis=0)
+                Xfile = np.load(str(Yfile['data_dir']))
+                X = np.append(X,Xfile['truestate'],axis=0)
             except:
                 continue
+    #X = np.array(X).astype('float32')
+    #Y = np.array(Y).astype('float32')
     return X,Y
 
 _X,_Y = _OrganizeData()
@@ -110,7 +109,7 @@ def _PrepareData():
     L = _X.shape[0]
     sep = CFP['MLTraining'].getfloat('validation_proportion')
     
-    train_size=int(L * sep)
+    train_size=int(L * (1-sep))
     index = np.arange(L)
     np.random.shuffle(index)
     train_index = index[:train_size]
@@ -224,7 +223,7 @@ def train_model(train_data):
         if epoch  >= max_epoch:
             done = True
 
-    _save_checkpoint(td, batch)
+    _save_checkpoint(td, epoch)
     print('Finished training!')
 
 def setup_tensorflow_test():

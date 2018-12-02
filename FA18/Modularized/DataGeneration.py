@@ -75,6 +75,7 @@ def ObservationGeneration():
         nobs = trueobs.shape[0]
         yobs = trueobs + np.random.multivariate_normal(np.zeros(dobs), Robsmat,nobs)
     np.savez(CFP['ObservationGeneration']['save_dir'],
+             data_dir=CFP['ObservationGeneration']['data_dir'],
              random_seed=random_seed,
              true_observation=trueobs,
              output_observation=yobs)
