@@ -119,19 +119,23 @@ def _PrepareData():
     Y = _Y[train_index,:]
     Xt = _X[test_index,:]
     Yt = _Y[test_index,:]
-    return X,Y,,
+    normalization = CFP['MachineLearning'].getboolean('normalization',False)
+    if not normalization:
+        return X,Y,Xt,Yt
+    else:
+        Xm = X.mean(axis=0)
+        Ym = Y.mean(axis=0)
+        Xs = X.std(axis=0)
+        Ys = Y.std(axis=0)
+        return (X-Xm)/Xs,(Y-Ym)/Ys,(Xt-Xm)/Xs,(Yt-Ym)/Ys,Xm,Xs,Ym,Ys
 
+_res = _PrepareData()
+_train_X,_train_Y,_test_X,_test_Y = _res[:4]
 normalization = CFP['MachineLearning'].getboolean('normalization',False)
-if not normalization:
-    return X,Y
-else:
-    Xm = X.mean(axis=0)
-    Ym = Y.mean(axis=0)
-    Xs = X.std(axis=0)
-    Ys = Y.std(axis=0)
-    return (X-Xm)/Xs,(Y-Ym)/Ys,Xm,Xs,Ym,Ys
-
-_train_X,_train_Y,_test_X,_test_Y = _PrepareData()
+if normalization:
+    _Xm,_Xs,_Ym,_Ys = _res[4:8]
+    np.savez(os.path.join(CFP['MachineLearning']['save_dir'],'normalization_params.npz'),
+             Xm=_Xm,Xs=_Xs,Ym=_Ym,Ys=_Ys)
 
 def data_generator(istrain=True,batch_size=0):
     X = _train_X if istrain else _test_X
@@ -299,12 +303,14 @@ def train():
     train_data = TrainData(locals())
     train_model(train_data)
     
-## A very crude version.
-## Just for experiment.
-def predict(td):
+def predict(td,X=None,Y=None):
     start_time  = time.time()
-    feed_dict = { td.X_variable : _X, 
-                 td.Y_variable : _Y}
+    if X is None:
+        X = _X
+    if Y is None:
+        Y = _Y
+    feed_dict = { td.X_variable : X, 
+                 td.Y_variable : Y}
     ops = [td.pred,td.loss]
     [pred,loss] = td.sess.run(ops, feed_dict=feed_dict)
     elapsed = int(time.time() - start_time)
@@ -313,6 +319,15 @@ def predict(td):
     return pred,loss  
 
 def test():
+    normalization = CFP['MachineLearning'].getboolean('normalization',False)
+    if normalization:
+        norm_params = np.load(os.path.join(CFP['MachineLearning']['save_dir'],'normalization_params.npz'))
+        X = (_X - norm_params['Xm']) / norm_params['Xs']
+        Y = (_Y - norm_params['Ym']) / norm_params['Ys']
+    else:
+        X = _X
+        Y = _Y
+    
     prepare_dirs(delete_train_dir=False)
     sess, summary_writer = setup_tensorflow_test()
 
@@ -326,11 +341,18 @@ def test():
     saver.restore(sess, model_path)
     
     test_data = TestData(locals())
-    pred,loss = predict(test_data)
-    evals = {'MSE':loss,}
+    pred,loss = predict(test_data,X=X,Y=Y)
+    
+    if normalization:
+        X = X * norm_params['Xs'] + norm_params['Xm']
+        Y = Y * norm_params['Ys'] + norm_params['Ym']
+        pred = pred * norm_params['Ys'] + norm_params['Ym']
+    
+    mse_loss = ((pred-Y)**2).mean()
+    evals = {'MSE':mse_loss,}
     if CFP['MLEvaluation'].getboolean('save_predict'):
-        np.savez(CFP['MLEvaluation']['save_dir'],X=_X,Y=_Y,predict=pred,evaluation=evals)
-    return pred,loss
+        np.savez(CFP['MLEvaluation']['save_dir'],X=X,Y=Y,predict=pred,evaluation=evals)
+    return pred,mse_loss
 
 def main(argv=None):
     train()
