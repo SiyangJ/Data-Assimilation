@@ -1,3 +1,2 @@
-TestData/
-TestModel/
-EvalData/
+*Data*/
+*Model*/

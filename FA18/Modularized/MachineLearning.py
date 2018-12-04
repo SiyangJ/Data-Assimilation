@@ -115,7 +115,21 @@ def _PrepareData():
     train_index = index[:train_size]
     test_index = index[train_size:]
     
-    return _X[train_index,:],_Y[train_index,:],_X[test_index,:],_Y[test_index,:]
+    X = _X[train_index,:]
+    Y = _Y[train_index,:]
+    Xt = _X[test_index,:]
+    Yt = _Y[test_index,:]
+    return X,Y,,
+
+normalization = CFP['MachineLearning'].getboolean('normalization',False)
+if not normalization:
+    return X,Y
+else:
+    Xm = X.mean(axis=0)
+    Ym = Y.mean(axis=0)
+    Xs = X.std(axis=0)
+    Ys = Y.std(axis=0)
+    return (X-Xm)/Xs,(Y-Ym)/Ys,Xm,Xs,Ym,Ys
 
 _train_X,_train_Y,_test_X,_test_Y = _PrepareData()
 

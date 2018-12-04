@@ -24,11 +24,16 @@ def DataGeneration():
     if resume_from_last and CFP['DataGeneration'].getboolean('xinit'):
         xinit = last_data['xinit']
     else:
-        xinit = np.random.rand(ndim)
-        if CFP['DataGeneration'].getboolean('from_attractor'):
-            for i in range(100):
-                xinit = M(xinit,i,i+1)
-            tinit = 100
+        try:
+            xinit_string = CFP['DataGeneration']['xinit_val']
+            xinit_strings = xinit_string.split(',')
+            xinit = np.array(xinit_strings).astype(np.float64)
+        except KeyError:
+            xinit = np.random.rand(ndim)
+            if CFP['DataGeneration'].getboolean('from_attractor'):
+                for i in range(100):
+                    xinit = M(xinit,i,i+1)
+                tinit = 100
     
     if resume_from_last and CFP['DataGeneration'].getboolean('truestate'):
         truestate = last_data['truestate']
