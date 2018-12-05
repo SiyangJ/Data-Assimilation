@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 import MachineLearning as ml
 import config
-from MachineLearning import create_model
+from MachineLearning import MachineLearning
 
 CFP = config.CFP
 
@@ -23,7 +23,7 @@ class ML:
         
         (self._X_variable,_,
          self._pred,_,_,
-         self._gene_vars) = create_model(train_phase=True)
+         self._gene_vars) = MachineLearning.create_model(train_phase=True)
         
         saver = tf.train.Saver()
         model_path = tf.train.latest_checkpoint(CFP['MachineLearning']['save_dir'])
