@@ -316,7 +316,7 @@ class MachineLearning:
             X = self.dataGen._X
         if Y is None:
             Y = self.dataGen._Y
-        feed_dict = { td.X_variable : X, 
+        feed_dict = {td.X_variable : X,
                      td.Y_variable : Y}
         ops = [td.pred,td.loss]
         [pred,loss] = td.sess.run(ops, feed_dict=feed_dict)
@@ -347,7 +347,7 @@ class MachineLearning:
         saver.restore(sess, model_path)
 
         test_data = TestData(locals())
-        pred,loss = MachineLearning.evaluate(test_data,X=X,Y=Y)
+        pred,loss = MachineLearning.evaluate(self,test_data,X=X,Y=Y)
 
         if self.dataGen.normalization:
             X = X * norm_params['Xs'] + norm_params['Xm']
