@@ -1,461 +1,201 @@
 import numpy as np
 import config
+import Model
+import ObservationOperator
 
 CFP = config.CFP
 
-def EnKF():
+class EnKF():
     
-    if PLOTTING:
-        import matplotlib.pyplot as plt
-    
-    np.random.seed(RSEED)
-    
-    # True model
-    def TM(xin,tin,pars):
-        return AuxFuncs.l96rhs(xin,tin,pars)
-
-    # Forcast model
-    def TF(xin,tin,pars):
-        return AuxFuncs.l96rhs(xin,tin,pars)
-
-    # Potentially different to introduce model error
-
-    if HTYPE==1 or (LINEAR and Hmat is None):
-        if dobs is None:
-            dobs = 10
-        Hmat = np.zeros([dobs,ndim])
-        for i in np.arange(dobs):
-            Hmat[i,i] = 1.0            
-            
-    if HTYPE is None:
-        ## TODO
-        if HERROR and Hm is None:
-            ## TODO
-            Hm = H
-    elif HTYPE==0:
-        ## Setting for direct observation
+    def __init__(self):
+        # True model
+        self.TM = getattr(Model,CFP['TrueModel']['model_equation'])
+        # Forcast model
+        self.TF = getattr(Model,CFP['RunModel']['model_equation'])
+        self.Hm = getattr(ObservationOperator,CFP['DataAssimilation']['observation_operator'])
         
-        dobs = 20
-        # True observation operator
-        def H(x):
-            return AuxFuncs.ObsOp_40_20(x)
-        # The observation operator that we think is true
-        def Hm(x):
-            return AuxFuncs.ObsOp_40_20(x)
+        self.linear = CFP['DataAssimilation'].getboolean('linear')
+        self.random_seed = CFP['DataAssimilation'].getfloat('random_seed')
         
-    elif HTYPE==1:
-        ## Setting for stupid inversion case
+        self.number_observation = CFP['DataGeneration'].getint('num')
+        self.dimension_state = CFP['RunModel'].getint('dimension')
+        self.dimension_observation = CFP['ObservationGeneration'].getint('dimension_observation')
+        self.number_ensemble = CFP['DataAssimilation'].getint('number_ensemble')
         
-        dobs = 10
-
-        # True observation operator
-        def H(x):
-            return AuxFuncs.Inv_20_10(AuxFuncs.ObsOp_40_20(x))
-
-        # The observation operator that we think is true
-        def Hm(x):
-            if not HERROR:
-                return H(x)
-            return Hmat @ x        
-    
-    if STAGE < 1:
-        ## find an initial condition on the attractor
-        xrand = np.random.rand(ndim)
-        ttrans = np.linspace(0,100,1000)
-        xtrans = scp.integrate.odeint(TM, xrand, ttrans, (pars,))
-
-        t = np.linspace(0,50,100000)
-        xattr = xtrans[-1,:]
-    
-    tend = nobs * deltaobs
-    tobs = np.linspace(0, tend, num=nobs+1)
-    ttraj = np.linspace(0, tend, num=nobs*100+1)
-    
-    if STAGE < 2 or truestate is None:
-        ## generate true trajectory
-        truetraj = scp.integrate.odeint(TM, xattr, ttraj, (pars,))
-        truestate = truetraj[::100,:]
-        truestate = truestate.T
-    
-    if xattr is None:
-        xattr = truestate[:,0]
-    
-    truestate = truestate[:,:nobs+1]
+        data = np.load(CFP['DataAssimilation']['data_source'])
+        obs  = np.load(CFP['DataAssimilation']['observation_source'])
         
-    if PLOTTING:
-        ## plot a long trajectory...
-        tlong = np.linspace(0,100,10000)
-        xlong = scp.integrate.odeint(TM, xattr, tlong, (pars,))
-        # Plotting
-        plt.figure(figsize=(10, 8))
-        plt.imshow(xlong, aspect='auto')
-        plt.colorbar()
-        #sigmaobs = np.abs(np.max(xlong[:,0]) - np.min(xlong[:,0]))/50
-    
-    if STAGE < 3 or trueobs is None:
-        ## generate observations
-        trueobs = H(truestate)
-    
-    trueobs = trueobs[:,:nobs+1]
-    robs = sigmaobs*sigmaobs
-    Robsmat = np.identity(dobs)*robs
-    
-    if yobs is None:
-        yobs = trueobs + np.random.multivariate_normal(np.zeros(dobs), Robsmat,nobs+1).T
+        self.truestate = data['truestate']
+        self.tinit = data['tinit']
+        self.tdelta = data['tdelta']
+        self.tobs = np.range(self.number_observation) * self.tdelta + tinit
         
-    yobs = yobs[:,:nobs+1]
-
-    ## Containers
-    xfm = np.zeros([nobs+1, ndim])
-    xam = np.zeros([nobs+1, ndim])
-    xfcov = np.zeros([nobs+1, ndim, ndim])
-    xacov = np.zeros([nobs+1, ndim, ndim])
-
-    yfm = np.zeros([nobs+1, dobs])
-    yfcov = np.zeros([nobs+1, dobs, dobs])
-
-    ## set the initial mean and covariance:
-    xam[0,:] = xattr + sigmainit*np.random.randn(*xattr.shape)
-    xacov[0,:,:] = np.identity(ndim)*sigmainit*sigmainit
-
-    ## Generate initial ensemble
-    xens = np.random.multivariate_normal(xam[0,:], xacov[0,:,:], nens)
-
-    ## Iterate for each observation
-    for ii in np.arange(1,nobs+1):
-
-        ## Forecast
-        for jj in np.arange(nens):
-            xens[jj,:] = scp.integrate.odeint(TF, xens[jj,:], [tobs[ii-1], tobs[ii]], (pars,))[-1,:]
-            if DEBUG:
-                print('.',end='')
-            if FORECAST_ERROR:
-            # Introduce forecast model error
-                xens[jj,:] += ferr * np.random.randn(ndim)
-
-        ## Forecast mean and cov
-        xfm[ii,:] = np.mean(xens,axis=0)
-        xfcov[ii,:,:] = np.cov(xens.T)
-
-        ## Observations generated from forecast
-        ## Estimating the covariances with sample covariance
-        yens = Hm(xens.T).T
-        yfm[ii,:] = np.mean(yens,axis=0)
-        yfcov[ii,:,:] = np.cov(yens.T)
-
-        ## Kalman gain:
-        if LINEAR:
-        # Linear EnKF
-            pf = xfcov[ii,:,:]
-
-            if INFLATION:
-            # inflation
-                pf += infl_lin*np.trace(xfcov[ii,:,:])/ndim*np.identity(ndim)
-
-            pfht = pf @ Hmat.T
-            kgain = pfht @ np.linalg.pinv( Hmat @ pfht + Robsmat)
-
-        else:
-        # Nonlinear EnKF
-            Ex = xens - xfm[ii,:]
-            Ey = yens - yfm[ii,:]    
-            Bxy = Ex.T @ Ey / (nens-1)
-            Byy = yfcov[ii,:,:]
-
-            if INFLATION:
-            # Inflation
-                Byy += infl_nlin*Robsmat
-            kgain = Bxy @ np.linalg.pinv(Byy)
-
-        ## Update ensemble members
-        pertobs = np.random.multivariate_normal(yobs[:,ii],Robsmat,nens)
-
-        for jj in np.arange(nens):
-            xens[jj,:] += kgain @ (pertobs[jj,:] - Hm(xens[[jj],:].T).flatten())
-
-        ## Analysis mean and cov
-        xam[ii,:] = np.mean(xens,axis=0)
-        xacov[ii,:,:] = np.cov(xens.T)
-
-        if DEBUG:
-            print(ii)
-    
-    if PLOTTING:
+        self.trueobs = obs['true_observation']
+        self.yobs = obs['output_observation']
         
-        if truetraj is None:
-            truetraj = scp.integrate.odeint(TM, xattr, ttraj, (pars,))     
+        self.sigma_init = CFP['DataAssimilation'].getfloat('sigma_init')
         
-        ## some plotting functions
-        def plotwitherrorbarsobsplt(iob, itr, nsig, cvflag):
-            lt, = plt.plot(ttraj, truetraj[:,itr])
-            lf, = plt.plot(tobs[1:], xfm[1::,itr], '.-')
-            la, = plt.plot(tobs, xam[:,itr], '.-')
-            if cvflag:
-                errf = np.sqrt(xfcov[:,itr,itr])*nsig
-                plt.fill_between(tobs[1:], xfm[1:,itr] - errf[1:], xfm[1:,itr] + errf[1:], alpha=0.5, color = lf.get_color())
-                erra = np.sqrt(xacov[:,itr,itr])*nsig
-                plt.fill_between(tobs[1:], xam[1:,itr] - erra[1:], xam[1:,itr] + erra[1:], alpha=0.5, color = la.get_color())
+        self.inflation = CFP['DataAssimilation'].getfloat('inflation')
+        
+        self.value_bound_upper = config.GetArray('RunModel','value_bound_upper')
+        self.value_bound_lower = config.GetArray('RunModel','value_bound_lower')
 
-        def plotwitherrorbarsnoobplt(itr, nsig, cvflag):
-            lt, = plt.plot(ttraj, truetraj[:,itr])
-            lf, = plt.plot(tobs[1:], xfm[1::,itr], '.-')
-            la, = plt.plot(tobs, xam[:,itr], '.-')
-            if cvflag:
-                errf = np.sqrt(xfcov[:,itr,itr])*nsig
-                plt.fill_between(tobs[1:], xfm[1:,itr] - errf[1:], xfm[1:,itr] + errf[1:], alpha=0.5, color = lf.get_color())
-                erra = np.sqrt(xacov[:,itr,itr])*nsig
-                plt.fill_between(tobs[1:], xam[1:,itr] - erra[1:], xam[1:,itr] + erra[1:], alpha=0.5, color = la.get_color())
+    def EnKF(self):
+        
+        nobs = self.number_observation
+        dobs = self.dimension_observation
+        ndim = self.dimension_state
+        nens = self.number_ensemble
+        
+        ## Containers
+        xfm = np.zeros([nobs, ndim])
+        xam = np.zeros([nobs, ndim])
+        xfcov = np.zeros([nobs, ndim, ndim])
+        xacov = np.zeros([nobs, ndim, ndim])
 
-        # For subplots
-        def plotwitherrorbarsobsax(iob, itr, nsig, cvflag):
-            lt, = ax.plot(ttraj, truetraj[:,itr])
-            lf, = ax.plot(tobs[1:], xfm[1:,itr], '.-')
-            la, = ax.plot(tobs[1:], xam[1:,itr], '.-')
-            if cvflag:
-                errf = np.sqrt(xfcov[:,itr,itr])*nsig
-                ax.fill_between(tobs[1:], xfm[1:,itr] - errf[1:], xfm[1:,itr] + errf[1:], alpha=0.5, color = lf.get_color())
-                erra = np.sqrt(xacov[:,itr,itr])*nsig
-                ax.fill_between(tobs[1:], xam[1:,itr] - erra[1:], xam[1:,itr] + erra[1:], alpha=0.5, color = la.get_color())
+        yfm = np.zeros([nobs, dobs])
+        yfcov = np.zeros([nobs, dobs, dobs])
+        
+        xinit = self.truestate[0,:]
+        sigmainit = self.sigma_init
+        
+        ## set the initial mean and covariance:
+        
+        sigma = xinit * np.clip(sigmainit * np.random.randn(*xinit.shape),-0.5,1)
+        
+        xfm[0,:] = xam[0,:] = xinit + sigma
+        xfcov[0,:,:] = xacov[0,:,:] = np.identity(ndim) * (sigma ** 2)
+        
+        ## Generate initial ensemble
+        xens = np.random.multivariate_normal(xam[0,:], xacov[0,:,:], nens)
+        
+        xens = np.clip(xens,self.value_bound_lower,self.value_bound_upper)
 
-        def plotwitherrorbarsnoobax(itr, nsig, cvflag):
-            lt, = ax.plot(ttraj, truetraj[:,itr])
-            lf, = ax.plot(tobs[1:], xfm[1:,itr], '.-')
-            la, = ax.plot(tobs[1:], xam[1:,itr], '.-')
-            if cvflag:
-                errf = np.sqrt(xfcov[:,itr,itr])*nsig
-                ax.fill_between(tobs[1:], xfm[1:,itr] - errf[1:], xfm[1:,itr] + errf[1:], alpha=0.5, color = lf.get_color())
-                erra = np.sqrt(xacov[:,itr,itr])*nsig
-                ax.fill_between(tobs[1:], xam[1:,itr] - erra[1:], xam[1:,itr] + erra[1:], alpha=0.5, color = la.get_color())
+        ## Iterate for each observation
+        for ii in np.arange(1,nobs):
 
+            ## Forecast
+            for jj in np.arange(nens):
+                xens[jj,:] = TF(xens[jj,:], self.tobs[ii-1], self.tobs[ii])
 
-        ## plot observed variables
-        cvflag = True
+            ## Forecast mean and cov
+            xfm[ii,:] = np.mean(xens,axis=0)
+            xfcov[ii,:,:] = np.cov(xens.T)
 
-        nsig=3
-        fig, axes = plt.subplots(nrows=2, ncols=4, figsize=(13,7))
-        for ii, ax in enumerate(axes.flat, start=1):
-            iob = ii-1
-            itr = iob
-            plotwitherrorbarsobsax(iob, itr, nsig, cvflag)
-            ax.grid()
-        fig.tight_layout()
+            ## Observations generated from forecast
+            ## Estimating the covariances with sample covariance
+            yens = self.Hm(xens)
+            yfm[ii,:] = np.mean(yens,axis=0)
+            yfcov[ii,:,:] = np.cov(yens.T)
 
-        ## plot some of the unobserved variables
-        nsig=3
-        fig, axes = plt.subplots(nrows=2, ncols=4, figsize=(13,7))
-        for ii, ax in enumerate(axes.flat, start=1):
-            itr = ii + 20
-            plotwitherrorbarsnoobax(itr, nsig, cvflag)
-            ax.grid()
-        fig.tight_layout()
+            ## Kalman gain:
+            if self.linear:
+            # Linear EnKF
+                pf = xfcov[ii,:,:]
+                
+                ## TODO
+                
+                if INFLATION:
+                # inflation
+                    pf += infl_lin*np.trace(xfcov[ii,:,:])/ndim*np.identity(ndim)
 
+                pfht = pf @ Hmat.T
+                kgain = pfht @ np.linalg.pinv( Hmat @ pfht + Robsmat)
 
-        ## Plot truth, forecast, and analysis as images
-        vmin=np.min((np.min(truestate),np.min(xfm),np.min(xam)))
-        vmax=np.min((np.max(truestate),np.max(xfm),np.max(xam)))
+            else:
+            # Nonlinear EnKF
+                Ex = xens - xfm[ii,:]
+                Ey = yens - yfm[ii,:]    
+                Bxy = Ex.T @ Ey / (nens-1)
+                Byy = yfcov[ii,:,:]
 
-        plt.figure(figsize=(17,6))
-        plt.subplot(1,3,1)
-        plt.imshow(truestate, aspect='auto', vmin=vmin, vmax=vmax)
-        plt.colorbar()
-        plt.subplot(1,3,2)
-        plt.imshow(xfm.T, aspect='auto', vmin=vmin, vmax=vmax)
-        plt.colorbar()
-        plt.subplot(1,3,3)
-        plt.imshow(xam.T, aspect='auto', vmin=vmin, vmax=vmax)
-        plt.colorbar()
+                # Inflation
+                Byy += self.inflation * Robsmat
+                kgain = Bxy @ np.linalg.pinv(Byy)
+
+            ## Update ensemble members
+            pertobs = np.random.multivariate_normal(yobs[:,ii],Robsmat,nens)
+
+            for jj in np.arange(nens):
+                xens[jj,:] += kgain @ (pertobs[jj,:] - Hm(xens[[jj],:].T).flatten())
+
+            ## Analysis mean and cov
+            xam[ii,:] = np.mean(xens,axis=0)
+            xacov[ii,:,:] = np.cov(xens.T)
+
 
         ## Calculate statistics
         # Absolute errors
         xferr = np.abs(xfm - truestate.T)
         xaerr = np.abs(xam - truestate.T)
 
-        vmin=np.min((np.min(xferr),np.min(xaerr)))
-        vmax=np.min((np.max(xferr),np.max(xaerr)))
+        xferr10 = xferr[:,0:10]
+        xferr30 = xferr[:,10:]
+        xaerr10 = xaerr[:,0:10]
+        xaerr30 = xaerr[:,10:]
 
-        plt.figure(figsize=(10,6))
+        xferr10avgx = np.mean(xferr10,axis=1)
+        xaerr10avgx = np.mean(xaerr10,axis=1)
 
-        plt.subplot(1,2,1)
-        plt.imshow(xferr[:,0:10], aspect='auto', vmin=vmin, vmax=vmax)
-        plt.colorbar()
-        plt.subplot(1,2,2)
-        plt.imshow(xaerr[:,0:10], aspect='auto', vmin=vmin, vmax=vmax)
-        plt.colorbar()
-        
-    
-    ## Calculate statistics
-    # Absolute errors
-    xferr = np.abs(xfm - truestate.T)
-    xaerr = np.abs(xam - truestate.T)
-    
-    xferr10 = xferr[:,0:10]
-    xferr30 = xferr[:,10:]
-    xaerr10 = xaerr[:,0:10]
-    xaerr30 = xaerr[:,10:]
+        xferr30avgx = np.mean(xferr30,axis=1)
+        xaerr30avgx = np.mean(xaerr30,axis=1)
 
-    xferr10avgx = np.mean(xferr10,axis=1)
-    xaerr10avgx = np.mean(xaerr10,axis=1)
+        xferravgx = np.mean(xferr,axis=1)
+        xaerravgx = np.mean(xaerr,axis=1)
 
-    xferr30avgx = np.mean(xferr30,axis=1)
-    xaerr30avgx = np.mean(xaerr30,axis=1)
+        avgstp = 30
+        xferravgt = np.mean(xferr[avgstp:,:],axis=0)
+        xferravgxt = np.mean(xferravgt)
 
-    xferravgx = np.mean(xferr,axis=1)
-    xaerravgx = np.mean(xaerr,axis=1)
+        xaerravgt = np.mean(xaerr[avgstp:,:],axis=0)
+        xaerravgxt = np.mean(xaerravgt)
 
-    avgstp = 30
-    xferravgt = np.mean(xferr[avgstp:,:],axis=0)
-    xferravgxt = np.mean(xferravgt)
+        xferr10avgxt = np.mean(xferr10avgx)
+        xaerr10avgxt = np.mean(xaerr10avgx)
 
-    xaerravgt = np.mean(xaerr[avgstp:,:],axis=0)
-    xaerravgxt = np.mean(xaerravgt)
+        xferr30avgxt = np.mean(xferr30avgx)
+        xaerr30avgxt = np.mean(xaerr30avgx)
 
-    xferr10avgxt = np.mean(xferr10avgx)
-    xaerr10avgxt = np.mean(xaerr10avgx)
-
-    xferr30avgxt = np.mean(xferr30avgx)
-    xaerr30avgxt = np.mean(xaerr30avgx)
-    
-    if PLOTTING:
-        plt.figure()
-        plt.subplot(1,3,1)
-        plt.plot(xferr10avgx)
-        plt.plot(xaerr10avgx)
-        plt.legend(['forecast','analysis'])
-        plt.title('First 10 variables')
-        plt.subplot(1,3,2)
-        plt.plot(xferr30avgx)
-        plt.plot(xaerr30avgx)
-        plt.legend(['forecast','analysis'])
-        plt.title('Last 30 variables')
-        plt.subplot(1,3,3)
-        plt.plot(xferravgx)
-        plt.plot(xaerravgx)
-        plt.legend(['forecast','analysis'])
-        plt.title('All variables')
-
-        plt.figure()
-        plt.plot(xferravgt)
-        plt.plot(xaerravgt)
-    
-    '''
-    SAVEDATA: indicator for which data to save  
-      0: Don't save anything
-      1: Save everything including,  
-          1. Flags and Parameters  
-          2. xfm, xam, xfcov, xacov  
-          3. yfm, yfcov  
-          4. statistics  
-      2: Flags, Paramters, Statistics (No running data)
-    '''
-    if SAVEDATA==1:
         np.savez(data_dir,
-                ## Paramters
-                # Notebook usage flags
-                DESC=DESC,
-                RSEED=RSEED,
-                HTYPE=HTYPE,
-                HERROR=HERROR,
-                LINEAR=LINEAR,
-                FORECAST_ERROR=FORECAST_ERROR,
-                INFLATION=INFLATION,
-                # Model parameters
-                ndim=ndim,
-                pars=pars,
-                # Observation paramters
-                nobs=nobs,
-                deltaobs=deltaobs,
-                dobs=dobs,
-                Hmat=Hmat,
-                sigmaobs=sigmaobs,
+                    ## Paramters
+                    # Notebook usage flags
+                    DESC=DESC,
+                    RSEED=RSEED,
+                    HTYPE=HTYPE,
+                    HERROR=HERROR,
+                    LINEAR=LINEAR,
+                    FORECAST_ERROR=FORECAST_ERROR,
+                    INFLATION=INFLATION,
+                    # Model parameters
+                    ndim=ndim,
+                    pars=pars,
+                    # Observation paramters
+                    nobs=nobs,
+                    deltaobs=deltaobs,
+                    dobs=dobs,
+                    Hmat=Hmat,
+                    sigmaobs=sigmaobs,
 
-                ## DA paramters
-                infl_lin=infl_lin,
-                infl_nlin=infl_nlin,
-                sigmainit=sigmainit,
-                nens=nens,
-                ferr=ferr,
-                 
-                ## Running Data
-                xfm=xfm,xfcov=xfcov,
-                xam=xam,xacov=xacov,
-                yfm=yfm,yfcov=yfcov,
-                ## Statistics
-                xferravgxt  =xferravgxt,  xaerravgxt  =xaerravgxt,
-                xferr10avgxt=xferr10avgxt,xaerr10avgxt=xaerr10avgxt,
-                xferr30avgxt=xferr30avgxt,xaerr30avgxt=xaerr30avgxt)
-    elif SAVEDATA==2:
-        np.savez(data_dir,
-                ## Paramters
-                # Notebook usage flags
-                DESC=DESC,
-                RSEED=RSEED,
-                HTYPE=HTYPE,
-                HERROR=HERROR,
-                LINEAR=LINEAR,
-                FORECAST_ERROR=FORECAST_ERROR,
-                INFLATION=INFLATION,
-                # Model parameters
-                ndim=ndim,
-                pars=pars,
-                # Observation paramters
-                nobs=nobs,
-                deltaobs=deltaobs,
-                dobs=dobs,
-                Hmat=Hmat,
-                sigmaobs=sigmaobs,
+                    ## DA paramters
+                    infl_lin=infl_lin,
+                    infl_nlin=infl_nlin,
+                    sigmainit=sigmainit,
+                    nens=nens,
+                    ferr=ferr,
 
-                ## DA paramters
-                infl_lin=infl_lin,
-                infl_nlin=infl_nlin,
-                sigmainit=sigmainit,
-                nens=nens,
-                ferr=ferr,
-                 
-                ## Statistics
-                xferravgxt  =xferravgxt,  xaerravgxt  =xaerravgxt,
-                xferr10avgxt=xferr10avgxt,xaerr10avgxt=xaerr10avgxt,
-                xferr30avgxt=xferr30avgxt,xaerr30avgxt=xaerr30avgxt)
-    elif SAVEDATA==3:
-        np.savez(data_dir,
-                ## Paramters
-                # Notebook usage flags
-                DESC=DESC,
-                RSEED=RSEED,
-                HTYPE=HTYPE,
-                HERROR=HERROR,
-                LINEAR=LINEAR,
-                FORECAST_ERROR=FORECAST_ERROR,
-                INFLATION=INFLATION,
-                # Model parameters
-                ndim=ndim,
-                pars=pars,
-                # Observation paramters
-                nobs=nobs,
-                deltaobs=deltaobs,
-                dobs=dobs,
-                Hmat=Hmat,
-                sigmaobs=sigmaobs,
+                    ## Truth
+                    truestate=truestate,
+                    trueobs=trueobs,
+                    yobs=yobs,
+                    ## Running Data
+                    xfm=xfm,xfcov=xfcov,
+                    xam=xam,xacov=xacov,
+                    yfm=yfm,yfcov=yfcov,
+                    ## Statistics
+                    xferravgxt  =xferravgxt,  xaerravgxt  =xaerravgxt,
+                    xferr10avgxt=xferr10avgxt,xaerr10avgxt=xaerr10avgxt,
+                    xferr30avgxt=xferr30avgxt,xaerr30avgxt=xaerr30avgxt)
 
-                ## DA paramters
-                infl_lin=infl_lin,
-                infl_nlin=infl_nlin,
-                sigmainit=sigmainit,
-                nens=nens,
-                ferr=ferr,
-                 
-                ## Truth
-                truestate=truestate,
-                trueobs=trueobs,
-                yobs=yobs,
-                ## Running Data
-                xfm=xfm,xfcov=xfcov,
-                xam=xam,xacov=xacov,
-                yfm=yfm,yfcov=yfcov,
-                ## Statistics
-                xferravgxt  =xferravgxt,  xaerravgxt  =xaerravgxt,
-                xferr10avgxt=xferr10avgxt,xaerr10avgxt=xaerr10avgxt,
-                xferr30avgxt=xferr30avgxt,xaerr30avgxt=xaerr30avgxt)
-    
-    return (xferravgxt,   xaerravgxt,
-            xferr10avgxt, xaerr10avgxt,
-            xferr30avgxt, xaerr30avgxt)
+        return (xferravgxt,   xaerravgxt,
+                xferr10avgxt, xaerr10avgxt,
+                xferr30avgxt, xaerr30avgxt)

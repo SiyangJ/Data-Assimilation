@@ -6,7 +6,8 @@ from MachineLearning import MachineLearning
 
 CFP = config.CFP
 
-class ML:
+class MLOnline:
+    
     def __init__(self):
         self.normalization = CFP['MachineLearning'].getboolean('normalization',False)
         if self.normalization:
@@ -31,7 +32,7 @@ class ML:
         saver.restore(self._sess, model_path)
 
     
-    def evaluate(self,T,X):
+    def evaluate(self,X):
         if self.normalization:
             X = (X - self._Xm) / self._Xs
 

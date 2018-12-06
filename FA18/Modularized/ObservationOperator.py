@@ -3,7 +3,7 @@ import math
 import config
 
 def TrueObsVer1(X):
-    hc = 10 #TODO
+    hc = config.CFP['TrueModel'].getfloat('hc')
     a =((0.2+X[:,1])/2+np.tanh(X[:,0]/(9.5*hc)) * (0.2-X[:,1])/2)
     Ci = 1-((0.8-(0.5*X[:,1]+.5*a))/0.6)
     Cp = (1 - a / X[:,1])
@@ -25,4 +25,10 @@ def StupidObsVer1(X):
     Csat = np.maximum(0,Ci-Cp)
     return Csat
 
-    
+_MLObs = None
+def MLObsVer1(X):
+    global _MLObs
+    if _MLObs is None:
+        import MLOnline
+        _MLObs = MLOnline.MLOnline()
+    return _MLObs.evaluate(X)

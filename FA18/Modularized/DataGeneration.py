@@ -50,6 +50,7 @@ def DataGeneration():
     np.savez(CFP['DataGeneration']['save_dir'],
              xinit = xinit,
              tinit = tinit,
+             tdelta = delta_data,
              random_seed=random_seed,
              truestate=truestate)
     
