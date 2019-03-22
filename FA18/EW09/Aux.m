@@ -31,26 +31,29 @@ hold off
 hc=10;
 a=@(E,AM) (0.2+AM)/2+tanh(E/(9.5*hc)).* (0.2-AM)/2 - 0.6;
 
-[X,Y] = meshgrid(-500:1e-1:0,0.5:1e-4:1);
+[X,Y] = meshgrid(-200:1:250,0.2:1e-3:0.8);
 A = a(X,Y);
 
 tol = 2e-4;
 A0 = abs(A)<tol;
-imshow(A0)
-%%
 X0 = X(A0);
 Y0 = Y(A0);
+plot(X0,Y0)
 %%
+
+[XX,YY] = meshgrid(-200:15:250,0.2:2e-2:0.8);
+
 figure('NumberTitle', 'off', 'Name', 'A bunch of trajectories',...
        'rend','painters','pos',[10 10 900 600])
 hold on   
-irange = 1:length(X0);
-labels = cell(1,length(irange));
+irange = 1:size(XX,1);
+jrange = 1:size(XX,2);
 tspan = [0,100];
 for i=irange
+for j=jrange
 
 Fc=0;
-x0=[X0(i);Y0(i)];
+x0=[XX(i,j);YY(i)];
 [t,y,tdis,ydis,idis,stats]=disode45(@(t,y) diff_eqs(t,y,Fc) ,@H, tspan,x0);
 % hc=10;
 % a=((0.2+y(:,2))/2+tanh(y(:,1)/(9.5*hc)).*(0.2-y(:,2))/2);
@@ -65,8 +68,8 @@ x0=[X0(i);Y0(i)];
 % Rad(:,5)=Cp.*Ci;
 
 plot(y(:,1),y(:,2))
-labels(i) = cellstr(sprintf('x0=[%4.2f;%4.4f]',x0(1),x0(2)));
 
+end
 end
 plot(X0,Y0)
 hold off
