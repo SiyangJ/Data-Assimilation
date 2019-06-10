@@ -35,7 +35,7 @@ ndim = 40;
 
 dobs = 20;
 
-nens = 200;
+nens = 20;
 
 inflmu = 0.005;
 
@@ -202,22 +202,21 @@ for i=2:nobs+1
     
 end
 
+%% Other stuff
 
-% %% Other stuff
-% 
-% figure
-% for i=20:23
-%     subplot(1,4,i-19)
-%     hold on
-%     plot(ttraj,truetraj(i,:),'b-','LineWidth',4)
-%     ami = xam(i,:);
-%     fmi = xfm(i,:);
-%     ame = reshape(xacov(i,i,:),[1,nobs+1]);
-%     fme = reshape(xfcov(i,i,:),[1,nobs+1]);
-%     errorbar(tobs,ami,ame,'o','MarkerSize',10,'MarkerFaceColor',[.49 1 .63])
-%     errorbar(tobs,fmi,fme,'r-s','LineWidth',2,'MarkerSize',8)
-%     plot(tobs,xmf(i,:),'g--*')
-%     hold off
-% end
+figure
+for i=20:23
+    subplot(1,4,i-19)
+    hold on
+    plot(ttraj,truetraj(i,:),'b-','LineWidth',4)
+    ami = xam(i,:);
+    fmi = xfm(i,:);
+    ame = reshape(xacov(i,i,:),[1,nobs+1]);
+    fme = reshape(xfcov(i,i,:),[1,nobs+1]);
+    %errorbar(tobs,ami,ame,'o','MarkerSize',10,'MarkerFaceColor',[.49 1 .63])
+    %errorbar(tobs,fmi,fme,'r-s','LineWidth',2,'MarkerSize',8)
+    plot(tobs,xmf(i,:),'g--*')
+    hold off
+end
 
-save('ExperimentalData/ed_10_30_me.mat')
+% save('ExperimentalData/ed_10_30_me.mat')

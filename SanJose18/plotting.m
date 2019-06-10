@@ -35,11 +35,11 @@ figure
 for i=1:40
     subplot(8,5,i)
     hold on
-    plot(ttraj,truetraj(i,:),'b-','LineWidth',6)
+    plot(ttraj,truetraj(i,:),'b-','LineWidth',4)
     ami = xam(i,:);
     fmi = xfm(i,:);
-    plot(tobs,ami,'r-','LineWidth',3)
-    plot(tobs,fmi,'g-','LineWidth',1)
+    plot(tobs,ami,'r-','LineWidth',2)
+    plot(tobs,fmi,'g-','LineWidth',0.5)
     %plot(tobs,xmf(i,:),'g--*')
     hold off
 end
