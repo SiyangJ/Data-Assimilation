@@ -185,7 +185,6 @@ for i=2:nobs+1
     Bxy = Ex*Ey'/(nens-1);
     Byy = cov(yens') + Robsmat;
     
-    
     kgain = Bxy*pinv(Byy);
     
     % Update Ensemble members
