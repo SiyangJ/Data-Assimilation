@@ -6,7 +6,7 @@ clc; close all; clear;
 
 INSPECT_ENSEMBLE_EVOLUTION = true;
 
-FILTER_TYPE = 2;
+FILTER_TYPE = 1;
 
 F = 8;
 
@@ -107,9 +107,10 @@ TF = @(t,x) L96(t,x,F);
 % end
 
 H = [eye(10),zeros(10,30)];
+Hf = H;
 
 h = @(x) new_stupid_inverse(x);
-hf = @(x) H * x;
+hf = @(x) Hf * x;
 
 % h = @(x) obs_40_20(x);
 
@@ -306,7 +307,7 @@ for i=2:nobs+1
         
     for j=1:nens     
         % For all models, use the same perturbed observations
-        disp(yobs(:,i) - hf(xens(:,j)));
+        % disp(yobs(:,i) - hf(xens(:,j)));
         pertob = mvnrnd(yobs(:,i),Robsmat,1)';
         xens(:,j) = xens(:,j)+kgain*(pertob-hf(xens(:,j)));       
     end

@@ -20,7 +20,7 @@ wiggle = 1e-1; %standard deviation of noise to add on resampling
 
 %% Model/truth parameters
 
-T = 14*obs_step; %final time
+T = 20*obs_step; %final time
 
 tvals = 0 : obs_step : T; %analysis times
 tdim = length(tvals);
@@ -76,14 +76,12 @@ R = obs_var*eye(obsdim); %assuming observation errors independent
 
 particle = repmat(mIC,1,Npf)+...
     normrnd(zeros(mdim,Npf),particle_spread);       % saves the 'current' particle ensemble, for calculations
-size(particle)
 phist = zeros(mdim,Npf,tdim); %history of particle values
 phist(:,:,1) = particle;
 
 W=ones(Npf,1)/Npf; %initial particle weights
 Whist = zeros(Npf,tdim); %history of particle weights
 Whist(:,1)= W;
-
 
 %% Generate truth and observations
 %deterministic model
@@ -122,7 +120,9 @@ for tau=1:tdim-1
     %note - if weights are updated using W=W*exp(-innov), as written in
     %textbooks, then W=0 everywhere is a common problem. The calculations
     %below avoid that problem.
-    Wtmp =  -0.5*innov'/R*innov;    Wmax=max(Wtmp);
+    % Wtmp =  -0.5*innov'/R*innov;    
+    Wtmp = -0.5*diag(innov'/R*innov);    
+    Wmax=max(Wtmp);
     Wtmp  = Wtmp-Wmax;
     W = W.*exp(Wtmp'); W=W/sum(W);
     Whist(:,tau+1) = W;
@@ -140,7 +140,7 @@ end
 
 
 %% Plot results
-[a,b]=findIntegerFactors(tdim);
+[a,b]=findIntegerFactors(tdim-1);
 
 % figure
 % for ind=1:tdim
@@ -155,16 +155,20 @@ end
 % subtitle('Unweighted particle distribution')
 
 figure
-for ind=1:tdim
-    subplot(a,b,ind)
+for ind=2:tdim
+    subplot(a,b,ind-1)
     hold on
     title(['t= ' num2str(tvals(ind))])
     %axis([-2 2 -2 2])
-    scatter(phist(1,:,ind),phist(2,:,ind),.01+5*Whist(:,ind)/max(Whist(:,ind)),'b') %plot particles with size given by weight
+    scatter(phist(1,:,ind),phist(2,:,ind),.001+5*Whist(:,ind-1)/max(Whist(:,ind-1)),'MarkerEdgeAlpha',0,'MarkerFaceColor','r','MarkerFaceAlpha',0.5) %plot particles with size given by weight
+    plot(phist(1,:,ind)*Whist(:,ind-1),phist(2,:,ind)*Whist(:,ind-1),'rx','LineWidth',2,'MarkerSize',10) %true state value
+    scatter(phist(1,:,ind),phist(2,:,ind),.001+5*Whist(:,ind)/max(Whist(:,ind)),'MarkerEdgeAlpha',0,'MarkerFaceColor','b','MarkerFaceAlpha',0.5) %plot particles with size given by weight
+    plot(phist(1,:,ind)*Whist(:,ind),phist(2,:,ind)*Whist(:,ind),'bx','LineWidth',2,'MarkerSize',10) %true state value
     plot(xt(1,ind),xt(2,ind),'kx','LineWidth',2,'MarkerSize',10) %true state value
     %plot(obshist(1,ind),obshist(2,ind),'rx','LineWidth',2,'MarkerSize',10) %observed state value
+    hold off
 end
-subtitle(sprintf('%s,Weighted particle distribution',model))
+subtitle(sprintf('%s,Weighted particle distribution',model));
 
 
 

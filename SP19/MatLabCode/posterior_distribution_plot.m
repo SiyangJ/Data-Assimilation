@@ -1,9 +1,9 @@
 %% A simple 2-dimensional case
 
-for ix = 1:5
+for ix = 1:1
     
-for iy = 1:5
-
+for iy = 1:1
+rng(19970215)
 ndim = 2;
 dobs = 2;
 
@@ -37,6 +37,7 @@ ens = mvnrnd(xpost,Pa,nens);
 subplot(5,5,(ix-1)*5+iy)
 nbins=[100 100];
 [N,C]=hist3(ens,nbins);
+%[N,C] =hist3w(ens,ones(nens,1)/nens,nbins);
 lN = log(N);
 lN(lN==-inf)=0;
 contourf(C{1},C{2},lN',8)
